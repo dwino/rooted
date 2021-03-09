@@ -11,8 +11,9 @@
 ## Features
 ### ToDo
 1. stacked (amount) projectiles
-    - print stack in hud
-    - add to stack when equiped
+    - (X) base
+    - (X) print stack in hud
+    - () add to stack when equiped
 2. targetting (check rustyrogueliketutorial)
 ### Done
 

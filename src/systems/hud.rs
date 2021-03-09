@@ -7,6 +7,8 @@ use crate::prelude::*;
 #[read_component(Carried)]
 #[read_component(Equiped)]
 #[read_component(Name)]
+#[read_component(Entity)]
+#[read_component(ProjectileStack)]
 pub fn hud(ecs: &SubWorld) {
     let mut health_query = <&Health>::query().filter(component::<Player>());
     let player_health = health_query.iter(ecs).next().unwrap();
@@ -68,11 +70,19 @@ pub fn hud(ecs: &SubWorld) {
 
     y += 1;
 
-    let mut equipment_query = <(&Item, &Name, &Equiped)>::query();
+    let mut equipment_query = <(Entity, &Item, &Name, &Equiped)>::query();
     equipment_query
         .iter(ecs)
-        .filter(|(_, _, equiped)| equiped.0 == player)
-        .for_each(|(_, name, _)| {
+        .filter(|(_, _, _, equiped)| equiped.0 == player)
+        .for_each(|(entity, _, name, _)| {
+            if let Ok(e) = ecs.entry_ref(*entity) {
+                if let Ok(proj) = e.get_component::<ProjectileStack>() {
+                    draw_batch.print(
+                        Point::new(3, y),
+                        format!("{} : {} #{}", y - 3, &name.0, proj.0),
+                    );
+                }
+            }
             draw_batch.print(Point::new(3, y), format!("{} : {}", y - 3, &name.0));
             y += 1;
         });

@@ -60,10 +60,8 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
                     weapon_damage = ranged_damage;
 
                     projectile.0 -= 1;
-                    println!("{}", projectile.0);
                     if projectile.0 < 1 {
                         commands.remove(*entity);
-                        println!("ditluktnog")
                     }
                 }
             }

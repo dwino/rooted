@@ -1,0 +1,12 @@
+/home/dwimo/Rooted_Dev/rooted/target/release/deps/bytemuck-818518aeae91be4a.rmeta: /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/lib.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/zeroable.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/pod.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/contiguous.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/offset_of.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/transparent.rs
+
+/home/dwimo/Rooted_Dev/rooted/target/release/deps/libbytemuck-818518aeae91be4a.rlib: /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/lib.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/zeroable.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/pod.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/contiguous.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/offset_of.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/transparent.rs
+
+/home/dwimo/Rooted_Dev/rooted/target/release/deps/bytemuck-818518aeae91be4a.d: /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/lib.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/zeroable.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/pod.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/contiguous.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/offset_of.rs /home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/transparent.rs
+
+/home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/lib.rs:
+/home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/zeroable.rs:
+/home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/pod.rs:
+/home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/contiguous.rs:
+/home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/offset_of.rs:
+/home/dwimo/.cargo/registry/src/github.com-1ecc6299db9ec823/bytemuck-1.5.1/src/transparent.rs:

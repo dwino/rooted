@@ -1,0 +1,81 @@
+use crate::prelude::*;
+
+#[system]
+#[read_component(Health)]
+#[read_component(Player)]
+#[read_component(Item)]
+#[read_component(Carried)]
+#[read_component(Equiped)]
+#[read_component(Name)]
+pub fn hud(ecs: &SubWorld) {
+    let mut health_query = <&Health>::query().filter(component::<Player>());
+    let player_health = health_query.iter(ecs).next().unwrap();
+
+    let mut draw_batch = DrawBatch::new();
+    draw_batch.target(2);
+    draw_batch.print_centered(1, "Explore the Dungeon. 'vi-keys' to move & melee.");
+    draw_batch.print_centered(2, "'g' to get an item, '1-9' to use/equip.");
+    draw_batch.print_centered(3, "'f' to fire equiped(!) dart at random target.");
+
+    draw_batch.bar_horizontal(
+        Point::zero(),
+        SCREEN_WIDTH * 2,
+        player_health.current,
+        player_health.max,
+        ColorPair::new(RED, BLACK),
+    );
+    draw_batch.print_color_centered(
+        0,
+        format!(
+            " Health: {} / {} ",
+            player_health.current, player_health.max
+        ),
+        ColorPair::new(WHITE, RED),
+    );
+
+    let (player, map_level) = <(Entity, &Player)>::query()
+        .iter(ecs)
+        .find_map(|(entity, player)| Some((*entity, player.map_level)))
+        .unwrap();
+
+    draw_batch.print_color_right(
+        Point::new(SCREEN_WIDTH * 2, 1),
+        format!("Dungeon Level: {}", map_level + 1),
+        ColorPair::new(YELLOW, BLACK),
+    );
+
+    let mut item_query = <(&Item, &Name, &Carried)>::query();
+    let mut y = 3;
+    item_query
+        .iter(ecs)
+        .filter(|(_, _, carried)| carried.0 == player)
+        .for_each(|(_, name, _)| {
+            draw_batch.print(Point::new(3, y), format!("{} : {}", y - 2, &name.0));
+            y += 1;
+        });
+
+    draw_batch.print_color(
+        Point::new(3, 2),
+        "Items carried",
+        ColorPair::new(YELLOW, BLACK),
+    );
+
+    draw_batch.print_color(
+        Point::new(3, y),
+        "Items equiped",
+        ColorPair::new(YELLOW, BLACK),
+    );
+
+    y += 1;
+
+    let mut equipment_query = <(&Item, &Name, &Equiped)>::query();
+    equipment_query
+        .iter(ecs)
+        .filter(|(_, _, equiped)| equiped.0 == player)
+        .for_each(|(_, name, _)| {
+            draw_batch.print(Point::new(3, y), format!("{} : {}", y - 3, &name.0));
+            y += 1;
+        });
+
+    draw_batch.submit(10000).expect("Batch error");
+}

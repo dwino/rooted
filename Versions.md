@@ -1,0 +1,24 @@
+# 210308 MVP!
+- basic content 
+    - (X) 3 creatures 
+    - (X) 3 kinds of ai
+    - (X) 3 plants
+        - (X)giving the fruit itmes
+    - (X) 3 use_items
+        - (X) healing
+        - (X) mapping
+        - (X) combo
+    - (X) 3 equipment_items
+        - (X) melee weapon
+        - (X) ranged weapon
+        - (X) armour
+    - (X) basic game balancing (1/3 win)
+- basic equipment system
+    - use to equip
+    - overwrite and remove same kind
+    - equipment affects combat
+- implement basic theme (16bit color pallet)
+- ascii 'pseudo-graphics'
+- hands on rust finished
+## bugfixes
+- equiped items don't stay on levelchange

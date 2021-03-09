@@ -44,7 +44,7 @@ impl MapBuilder {
         let mut mb = architect.new(rng);
         apply(&mut mb, rng);
 
-        mb.theme = RootedTheme::new();
+        mb.theme = TiledTheme::new();
 
         mb.tile_variety(rng);
 

@@ -91,6 +91,58 @@ impl MapTheme for RootedTheme {
     }
 }
 
+pub struct TiledTheme {}
+
+impl TiledTheme {
+    pub fn new() -> Box<dyn MapTheme> {
+        Box::new(Self {})
+    }
+}
+
+impl MapTheme for TiledTheme {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType {
+        match tile_type {
+            TileType::Floor => to_cp437('.'),
+            TileType::FloorVar1 => to_cp437(':'), //rubble
+            TileType::FloorVar2 => to_cp437(','), //smalfoilage
+            TileType::FloorVar3 => to_cp437(';'), //bigfoilage
+            TileType::Wall => to_cp437('#'),
+            TileType::WallVar1 => to_cp437('⌠'), //tree
+            TileType::WallVar2 => to_cp437('%'),   //roots
+            TileType::WallVar3 => to_cp437('♣'), //bush
+            TileType::Exit => to_cp437('>'),
+        }
+    }
+
+    fn in_fov_colorpair_to_render(&self, tile_type: TileType) -> ColorPair {
+        match tile_type {
+            TileType::Floor
+            | TileType::FloorVar1
+            | TileType::FloorVar2
+            | TileType::FloorVar3
+            | TileType::Wall
+            | TileType::WallVar1
+            | TileType::WallVar2
+            | TileType::WallVar3
+            | TileType::Exit => ColorPair::new(WHITE, BLACK),
+        }
+    }
+
+    fn out_fov_colorpair_to_render(&self, tile_type: TileType) -> ColorPair {
+        match tile_type {
+            TileType::Floor
+            | TileType::FloorVar1
+            | TileType::FloorVar2
+            | TileType::FloorVar3
+            | TileType::Wall
+            | TileType::WallVar1
+            | TileType::WallVar2
+            | TileType::WallVar3
+            | TileType::Exit => ColorPair::new(DARK_GRAY, BLACK),
+        }
+    }
+}
+
 pub struct DungeonTheme {}
 
 impl DungeonTheme {

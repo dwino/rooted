@@ -10,13 +10,15 @@
 
 ## Features
 ### ToDo
+- make entity theme for tileset (similar to maptheme)
 1. stacked (amount) projectiles
     - (X) base
     - (X) print stack in hud
     - () add to stack when equiped
 2. targetting (check rustyrogueliketutorial)
-3. Kenney Tiles test?
 ### Done
+- Kenney Tiles test?
+
 
 ## Balance
 ### ToDo

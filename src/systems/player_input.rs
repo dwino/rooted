@@ -8,7 +8,7 @@ use crate::prelude::*;
 #[read_component(Item)]
 #[read_component(Carried)]
 #[read_component(Equiped)]
-#[read_component(Projectile)]
+#[read_component(ProjectileStack)]
 #[read_component(Weapon)]
 #[read_component(FieldOfView)]
 pub fn player_input(
@@ -72,26 +72,28 @@ pub fn player_input(
                     .find_map(|(entity, _)| Some(*entity))
                     .unwrap();
 
-                if let Some(_projectile) = <(&Equiped, &Projectile)>::query()
+                if let Some((_, projectile)) = <(&Equiped, &ProjectileStack)>::query()
                     .iter(ecs)
                     .filter(|(equiped, _)| equiped.0 == player_entity)
                     .next()
                 {
-                    let player_fov = fov.iter(ecs).next().unwrap();
+                    if projectile.0 >= 1 {
+                        let player_fov = fov.iter(ecs).next().unwrap();
 
-                    if let Some(closest) = enemies
-                        .iter(ecs)
-                        .filter(|(_, pos)| player_fov.visible_tiles.contains(&pos))
-                        .find_map(|(entity, _)| Some(*entity))
-                    {
-                        commands.push((
-                            (),
-                            WantsToRangedAttack {
-                                attacker: player_entity,
-                                victim: closest,
-                            },
-                        ));
-                        *turn_state = TurnState::PlayerTurn;
+                        if let Some(closest) = enemies
+                            .iter(ecs)
+                            .filter(|(_, pos)| player_fov.visible_tiles.contains(&pos))
+                            .find_map(|(entity, _)| Some(*entity))
+                        {
+                            commands.push((
+                                (),
+                                WantsToRangedAttack {
+                                    attacker: player_entity,
+                                    victim: closest,
+                                },
+                            ));
+                            *turn_state = TurnState::PlayerTurn;
+                        }
                     }
                 }
             }

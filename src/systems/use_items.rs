@@ -36,8 +36,8 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                                     commands.remove(*e);
                                 })
                         }
-                        if e.get_component::<Projectile>().is_ok() {
-                            <(Entity, &Equiped, &Projectile)>::query()
+                        if e.get_component::<ProjectileStack>().is_ok() {
+                            <(Entity, &Equiped, &ProjectileStack)>::query()
                                 .iter(ecs)
                                 .filter(|(_, c, _)| c.0 == activate.used_by)
                                 .for_each(|(e, _, _)| {

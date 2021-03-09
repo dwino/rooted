@@ -161,7 +161,7 @@ impl Templates {
         if let Some(ranged_damage) = &template.base_ranged_damage {
             commands.add_component(entity, RangedDamage(*ranged_damage));
             if template.entity_type == EntityType::Equipment {
-                commands.add_component(entity, Projectile {});
+                commands.add_component(entity, ProjectileStack(3));
             }
         }
     }

@@ -70,7 +70,7 @@ pub struct Equipment();
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Weapon;
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Projectile;
+pub struct ProjectileStack(pub i32);
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Damage(pub i32);
 #[derive(Clone, Copy, Debug, PartialEq)]

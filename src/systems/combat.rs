@@ -10,7 +10,7 @@ use crate::prelude::*;
 #[read_component(Defense)]
 #[read_component(Carried)]
 #[read_component(Equiped)]
-#[read_component(Projectile)]
+#[write_component(ProjectileStack)]
 pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
     let mut ranged_attackers = <(Entity, &WantsToRangedAttack)>::query();
     let ranged_victims: Vec<(Entity, Entity, Entity)> = ranged_attackers
@@ -46,11 +46,27 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
                 0
             };
 
-            let weapon_damage: i32 = <(&Equiped, &RangedDamage, &Projectile)>::query()
-                .iter(ecs)
-                .filter(|(equiped, _, _)| equiped.0 == *attacker)
-                .map(|(_, dmg, _)| dmg.0)
-                .sum();
+            let mut weapon_damage = 0;
+
+            //TODO: check of de attacker de player is (nu check je enkel het victim), en algemeen opkuisen
+            if !is_player {
+                if let (entity, ranged_damage, mut projectile) =
+                    <(Entity, &Equiped, &RangedDamage, &mut ProjectileStack)>::query()
+                        .iter_mut(ecs)
+                        .filter(|(_, equiped, _, _)| equiped.0 == *attacker)
+                        .find_map(|(entity, _, dmg, projectile)| Some((entity, dmg.0, projectile)))
+                        .unwrap()
+                {
+                    weapon_damage = ranged_damage;
+
+                    projectile.0 -= 1;
+                    println!("{}", projectile.0);
+                    if projectile.0 < 1 {
+                        commands.remove(*entity);
+                        println!("ditluktnog")
+                    }
+                }
+            }
 
             let armour_defense: i32 = <(&Equiped, &Defense)>::query()
                 .iter(ecs)

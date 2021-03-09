@@ -50,7 +50,7 @@ Templates(
             frequency: 8,
             ai_type: Some(MovingRandomly),
             base_damage: Some(2),
-            base_defense: Some(1)
+            base_defense: Some(0)
 
         ),
         Template(

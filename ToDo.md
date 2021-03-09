@@ -2,11 +2,18 @@
 
 # General
 ## ToDo
+- Refactor combat system
+    - ranged en melee proper uit elkaar halen (aparte systemen?)
+    - if isplayer werkt enkel als enkel de player aangevallen wordt!!!
+## Done
 - git version control
 
 ## Features
 ### ToDo
-
+1. stacked (amount) projectiles
+    - print stack in hud
+    - add to stack when equiped
+2. targetting (check rustyrogueliketutorial)
 ### Done
 
 ## Balance
@@ -22,8 +29,7 @@
 
 
 ## Stretch Goals
-0. stacked (amount) projectiles
-0. targetting (check rustyrogueliketutorial)
+
 1. turn_initiative (check rustyrogueliketutorial)
 2. ai chaning (check rustyrogueliketutorial)
 3. Feromone attraction ai

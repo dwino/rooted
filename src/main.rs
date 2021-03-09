@@ -237,10 +237,10 @@ fn main() -> BError {
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         .with_tile_dimensions(TILE_DIMENSIONS, TILE_DIMENSIONS)
         .with_resource_path("resources/")
-        .with_font("Kren_13x13.png", 13, 13)
+        .with_font("kenney_rooted8x8.png", 8, 8)
         .with_font("terminal8x8.png", 8, 8)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Kren_13x13.png")
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Kren_13x13.png")
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "kenney_rooted8x8.png")
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "kenney_rooted8x8.png")
         .with_simple_console_no_bg(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, "terminal8x8.png")
         .build()?;
 

@@ -15,6 +15,7 @@
     - (X) print stack in hud
     - () add to stack when equiped
 2. targetting (check rustyrogueliketutorial)
+3. Kenney Tiles test?
 ### Done
 
 ## Balance

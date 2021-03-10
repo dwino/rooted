@@ -1,5 +1,3 @@
-use std::i32::MAX;
-
 use crate::{prelude::*, turn_state};
 
 #[system]
@@ -19,168 +17,147 @@ pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
     #[resource] key: &Option<VirtualKeyCode>,
-    #[resource] turn_state: &mut TurnState,
 ) {
-    let mut players = <(Entity, &Point)>::query().filter(component::<Player>());
-    let mut enemies = <(Entity, &Point)>::query().filter(component::<Creature>());
-    let (player_entity, player_pos) = players
+    let (player_entity, player_pos, player_fov) = <(Entity, &Point, &FieldOfView)>::query()
+        .filter(component::<Player>())
         .iter(ecs)
-        .find_map(|(entity, pos)| Some((*entity, *pos)))
+        .find_map(|(entity, pos, fov)| Some((*entity, *pos, fov)))
         .unwrap();
-    let mut player_fov = <&FieldOfView>::query().filter(component::<Player>());
-
-    let mut delta = Point::new(i32::MAX, i32::MAX);
-    let consumed_turn_delta = Point::new(i32::MAX - 1, i32::MAX - 1);
 
     if let Some(key) = *key {
         match key {
             VirtualKeyCode::H => {
-                delta = Point::new(-1, 0);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(-1, 0))
             }
             VirtualKeyCode::L => {
-                delta = Point::new(1, 0);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(1, 0))
             }
             VirtualKeyCode::K => {
-                delta = Point::new(0, -1);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(0, -1))
             }
             VirtualKeyCode::J => {
-                delta = Point::new(0, 1);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(0, 1))
             }
             VirtualKeyCode::Y => {
-                delta = Point::new(-1, -1);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(-1, -1))
             }
             VirtualKeyCode::U => {
-                delta = Point::new(1, -1);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(1, -1))
             }
             VirtualKeyCode::B => {
-                delta = Point::new(-1, 1);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(-1, 1))
             }
             VirtualKeyCode::N => {
-                delta = Point::new(1, 1);
+                move_or_attack(ecs, commands, player_entity, player_pos, Point::new(1, 1))
             }
-            VirtualKeyCode::Space => {
-                delta = Point::new(0, 0);
-            }
-            VirtualKeyCode::G => {
-                let mut items = <(Entity, &Item, &Point)>::query();
-                items
-                    .iter(ecs)
-                    .filter(|(_entity, _item, &item_pos)| item_pos == player_pos)
-                    .for_each(|(entity, _item, _item_pos)| {
-                        commands.remove_component::<Point>(*entity);
-                        commands.add_component(*entity, Carried(player_entity));
-                    });
-            }
-            VirtualKeyCode::F => {
-                // IF TARGETAVAILABLE
-                // if let Some(closest) = enemies
-                //     .iter(ecs)
-                //     .filter(|(_, pos)| player_fov.visible_tiles.contains(&pos))
-                //     .find_map(|(entity, _)| Some(*entity))
-                if let Some(target) = <&Targeting>::query()
-                    .iter(ecs)
-                    .find_map(|targeting| targeting.current_target)
-                {
-                    commands.push((
-                        (),
-                        WantsToRangedAttack {
-                            attacker: player_entity,
-                            victim: target,
-                        },
-                    ));
-                    *turn_state = TurnState::PlayerTurn;
-                    println!("shootattempt");
-                } else {
-                    println!("nothing targeted");
-                }
-            }
-            VirtualKeyCode::Tab => {
-                if let Some((_, projectile)) = <(&Equiped, &ProjectileStack)>::query()
-                    .iter(ecs)
-                    .filter(|(equiped, _)| equiped.0 == player_entity)
-                    .next()
-                {
-                    if projectile.0 >= 1 {
-                        commands.push(((), WantsCycleTarget {}));
-                        *turn_state = TurnState::AwaitingInput;
-                        println!("dit lukt nog");
-                    }
-                }
-            }
-            VirtualKeyCode::Key1 => {
-                use_item(0, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key2 => {
-                use_item(1, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key3 => {
-                use_item(2, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key4 => {
-                use_item(3, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key5 => {
-                use_item(4, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key6 => {
-                use_item(5, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key7 => {
-                use_item(6, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key8 => {
-                use_item(7, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            VirtualKeyCode::Key9 => {
-                use_item(8, ecs, commands, player_entity);
-                delta = consumed_turn_delta;
-            }
-            _ => (),
+            VirtualKeyCode::Space => wait(commands),
+            VirtualKeyCode::G => pick_up_item(ecs, commands, player_entity, player_pos),
+            VirtualKeyCode::F => shoot_or_throw(ecs, commands, player_entity),
+            VirtualKeyCode::Tab => target(ecs, commands, player_entity),
+            VirtualKeyCode::Key1 => use_item(0, ecs, commands, player_entity),
+            VirtualKeyCode::Key2 => use_item(1, ecs, commands, player_entity),
+            VirtualKeyCode::Key3 => use_item(2, ecs, commands, player_entity),
+            VirtualKeyCode::Key4 => use_item(3, ecs, commands, player_entity),
+            VirtualKeyCode::Key5 => use_item(4, ecs, commands, player_entity),
+            VirtualKeyCode::Key6 => use_item(5, ecs, commands, player_entity),
+            VirtualKeyCode::Key7 => use_item(6, ecs, commands, player_entity),
+            VirtualKeyCode::Key8 => use_item(7, ecs, commands, player_entity),
+            VirtualKeyCode::Key9 => use_item(8, ecs, commands, player_entity),
+            _ => send_end_input_message(commands, TurnState::AwaitingInput),
         };
+    }
+}
+fn move_or_attack(
+    ecs: &mut SubWorld,
+    commands: &mut CommandBuffer,
+    player_entity: Entity,
+    player_pos: Point,
+    delta: Point,
+) {
+    let destination = player_pos + delta;
+    let mut enemies = <(Entity, &Point)>::query().filter(component::<Creature>());
+    let mut hit_something = false;
+    enemies
+        .iter(ecs)
+        .filter(|(_, pos)| **pos == destination)
+        .for_each(|(entity, _)| {
+            hit_something = true;
 
-        if (delta.x != 0 || delta.y != 0) && (delta.x < i32::MAX - 1 && delta.y < i32::MAX - 1) {
-            let destination = player_pos + delta;
-            let mut hit_something = false;
-            enemies
-                .iter(ecs)
-                .filter(|(_, pos)| **pos == destination)
-                .for_each(|(entity, _)| {
-                    hit_something = true;
+            commands.push((
+                (),
+                WantsToAttack {
+                    attacker: player_entity,
+                    victim: *entity,
+                },
+            ));
+        });
 
-                    commands.push((
-                        (),
-                        WantsToAttack {
-                            attacker: player_entity,
-                            victim: *entity,
-                        },
-                    ));
-                });
+    if !hit_something {
+        commands.push((
+            (),
+            WantsToMove {
+                entity: player_entity,
+                destination,
+            },
+        ));
+    }
+    //Check again in movement or combat systems
+    send_end_input_message(commands, TurnState::PlayerTurn);
+}
 
-            if !hit_something {
+fn wait(commands: &mut CommandBuffer) {
+    commands.push(((), WantsEndInput(TurnState::PlayerTurn)));
+}
+
+fn pick_up_item(
+    ecs: &mut SubWorld,
+    commands: &mut CommandBuffer,
+    player_entity: Entity,
+    player_pos: Point,
+) {
+    if let Some(item_entity) = <(Entity, &Item, &Point)>::query()
+        .iter(ecs)
+        .filter(|(_entity, _item, &item_pos)| item_pos == player_pos)
+        .find_map(|(item_entity, _item, _item_pos)| Some(item_entity))
+    {
+        commands.remove_component::<Point>(*item_entity);
+        commands.add_component(*item_entity, Carried(player_entity));
+        send_end_input_message(commands, TurnState::PlayerTurn);
+    }
+}
+
+fn shoot_or_throw(ecs: &mut SubWorld, commands: &mut CommandBuffer, player_entity: Entity) {
+    if let Some(target) = <&Targeting>::query()
+        .iter(ecs)
+        .find_map(|targeting| targeting.current_target)
+    {
+        match ecs.entry_ref(target) {
+            Ok(_) => {
                 commands.push((
                     (),
-                    WantsToMove {
-                        entity: player_entity,
-                        destination,
+                    WantsToRangedAttack {
+                        attacker: player_entity,
+                        victim: target,
                     },
                 ));
+                send_end_input_message(commands, TurnState::PlayerTurn);
             }
-            *turn_state = TurnState::PlayerTurn;
+            Err(_) => {
+                send_end_input_message(commands, TurnState::AwaitingInput);
+            }
         }
+    }
+}
 
-        //TODO: check if consumed turn in a less hacky way
-        if delta.x == i32::MAX || delta.y == i32::MAX {
-            *turn_state = TurnState::AwaitingInput;
-        } else if delta.x == i32::MAX - 1 || delta.y == i32::MAX - 1 {
-            *turn_state = TurnState::PlayerTurn;
+fn target(ecs: &mut SubWorld, commands: &mut CommandBuffer, player_entity: Entity) {
+    if let Some((_, projectile)) = <(&Equiped, &ProjectileStack)>::query()
+        .iter(ecs)
+        .filter(|(equiped, _)| equiped.0 == player_entity)
+        .next()
+    {
+        if projectile.0 >= 1 {
+            commands.push(((), WantsCycleTarget {}));
+            send_end_input_message(commands, TurnState::AwaitingInput);
         }
     }
 }
@@ -201,5 +178,10 @@ fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer, player_e
                 item: item_entity,
             },
         ));
+        send_end_input_message(commands, TurnState::PlayerTurn);
     }
+}
+
+fn send_end_input_message(commands: &mut CommandBuffer, new_state: TurnState) {
+    commands.push(((), WantsEndInput(new_state)));
 }

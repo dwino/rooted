@@ -14,10 +14,10 @@
     - (X) base
     - (X) print stack in hud
     - () add to stack when equiped
-2. targetting (check rustyrogueliketutorial)
+2. targeting (check rustyrogueliketutorial)
     - (X) targetable component for creatures
     - (X) targetting component for player
-    - (X) playerinput 'tab' sends CycleTargetting messages (van -1 tot len)
+    - () playerinput 'tab' sends CycleTargetting messages (van Max   tot len)
     - targettingsystem
         - (X) checks CycleTargetting message
         - (X) querys tragetables in playerfov

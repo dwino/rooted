@@ -4,12 +4,15 @@ use crate::prelude::*;
 #[read_component(WantsCycleTarget)]
 #[read_component(Point)]
 #[read_component(FieldOfView)]
-#[write_component(Targeting)]
+#[read_component(Targeting)]
+#[read_component(Targetable)]
 #[read_component(Player)]
+#[read_component(Entity)]
+
 pub fn targetting(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut CommandBuffer) {
     //1. Check WantsCycleTarget message
     if let Some(message) = <(Entity, &WantsCycleTarget)>::query()
-        .iter_mut(ecs)
+        .iter(ecs)
         .map(|(message_entity, _)| message_entity)
         .next()
     {
@@ -56,6 +59,7 @@ pub fn targetting(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut Comm
                 index: new_index,
             },
         );
+        commands.remove(*message);
     }
 
     //3. Check targets in Fov

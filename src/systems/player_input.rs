@@ -11,6 +11,8 @@ use crate::prelude::*;
 #[read_component(ProjectileStack)]
 #[read_component(Weapon)]
 #[read_component(FieldOfView)]
+#[read_component(Targeting)]
+#[read_component(WantsCycleTarget)]
 pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
@@ -19,7 +21,11 @@ pub fn player_input(
 ) {
     let mut players = <(Entity, &Point)>::query().filter(component::<Player>());
     let mut enemies = <(Entity, &Point)>::query().filter(component::<Creature>());
-    let mut fov = <&FieldOfView>::query().filter(component::<Player>());
+    let (player_entity, player_pos) = players
+        .iter(ecs)
+        .find_map(|(entity, pos)| Some((*entity, *pos)))
+        .unwrap();
+    let mut player_fov = <&FieldOfView>::query().filter(component::<Player>());
 
     let mut delta = Point::zero();
 
@@ -53,66 +59,63 @@ pub fn player_input(
                 delta = Point::new(0, 0);
             }
             VirtualKeyCode::G => {
-                let (player, player_pos) = players
-                    .iter(ecs)
-                    .find_map(|(entity, pos)| Some((*entity, *pos)))
-                    .unwrap();
                 let mut items = <(Entity, &Item, &Point)>::query();
                 items
                     .iter(ecs)
                     .filter(|(_entity, _item, &item_pos)| item_pos == player_pos)
                     .for_each(|(entity, _item, _item_pos)| {
                         commands.remove_component::<Point>(*entity);
-                        commands.add_component(*entity, Carried(player));
+                        commands.add_component(*entity, Carried(player_entity));
                     });
             }
             VirtualKeyCode::F => {
-                let player_entity = players
+                // IF TARGETAVAILABLE
+                // if let Some(closest) = enemies
+                //     .iter(ecs)
+                //     .filter(|(_, pos)| player_fov.visible_tiles.contains(&pos))
+                //     .find_map(|(entity, _)| Some(*entity))
+                if let Some(target) = <&Targeting>::query()
                     .iter(ecs)
-                    .find_map(|(entity, _)| Some(*entity))
-                    .unwrap();
-
+                    .find_map(|targeting| targeting.current_target)
+                {
+                    commands.push((
+                        (),
+                        WantsToRangedAttack {
+                            attacker: player_entity,
+                            victim: target,
+                        },
+                    ));
+                    *turn_state = TurnState::PlayerTurn;
+                } else {
+                    println!("nothing targeted");
+                }
+            }
+            VirtualKeyCode::Tab => {
                 if let Some((_, projectile)) = <(&Equiped, &ProjectileStack)>::query()
                     .iter(ecs)
                     .filter(|(equiped, _)| equiped.0 == player_entity)
                     .next()
                 {
                     if projectile.0 >= 1 {
-                        let player_fov = fov.iter(ecs).next().unwrap();
-
-                        if let Some(closest) = enemies
-                            .iter(ecs)
-                            .filter(|(_, pos)| player_fov.visible_tiles.contains(&pos))
-                            .find_map(|(entity, _)| Some(*entity))
-                        {
-                            commands.push((
-                                (),
-                                WantsToRangedAttack {
-                                    attacker: player_entity,
-                                    victim: closest,
-                                },
-                            ));
-                            *turn_state = TurnState::PlayerTurn;
-                        }
+                        commands.push(((), WantsCycleTarget {}));
+                        *turn_state = TurnState::PlayerTurn;
+                        println!("dit lukt nog");
                     }
                 }
             }
-            VirtualKeyCode::Key1 => use_item(0, ecs, commands),
-            VirtualKeyCode::Key2 => use_item(1, ecs, commands),
-            VirtualKeyCode::Key3 => use_item(2, ecs, commands),
-            VirtualKeyCode::Key4 => use_item(3, ecs, commands),
-            VirtualKeyCode::Key5 => use_item(4, ecs, commands),
-            VirtualKeyCode::Key6 => use_item(5, ecs, commands),
-            VirtualKeyCode::Key7 => use_item(6, ecs, commands),
-            VirtualKeyCode::Key8 => use_item(7, ecs, commands),
-            VirtualKeyCode::Key9 => use_item(8, ecs, commands),
+            VirtualKeyCode::Key1 => use_item(0, ecs, commands, player_entity),
+            VirtualKeyCode::Key2 => use_item(1, ecs, commands, player_entity),
+            VirtualKeyCode::Key3 => use_item(2, ecs, commands, player_entity),
+            VirtualKeyCode::Key4 => use_item(3, ecs, commands, player_entity),
+            VirtualKeyCode::Key5 => use_item(4, ecs, commands, player_entity),
+            VirtualKeyCode::Key6 => use_item(5, ecs, commands, player_entity),
+            VirtualKeyCode::Key7 => use_item(6, ecs, commands, player_entity),
+            VirtualKeyCode::Key8 => use_item(7, ecs, commands, player_entity),
+            VirtualKeyCode::Key9 => use_item(8, ecs, commands, player_entity),
             _ => (),
         };
 
-        let (player_entity, destination) = players
-            .iter(ecs)
-            .find_map(|(entity, pos)| Some((*entity, *pos + delta)))
-            .unwrap();
+        let destination = player_pos + delta;
 
         if delta.x != 0 || delta.y != 0 {
             let mut hit_something = false;
@@ -146,12 +149,7 @@ pub fn player_input(
     }
 }
 
-fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer) {
-    let player_entity = <(Entity, &Player)>::query()
-        .iter(ecs)
-        .find_map(|(entity, _player)| Some(*entity))
-        .unwrap();
-
+fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer, player_entity: Entity) {
     let item_entity = <(Entity, &Item, &Carried)>::query()
         .iter(ecs)
         .filter(|(_, _, carried)| carried.0 == player_entity)

@@ -5,6 +5,7 @@ use crate::prelude::*;
 #[read_component(Name)]
 #[read_component(FieldOfView)]
 #[read_component(Player)]
+#[read_component(Targeting)]
 pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camera: &Camera) {
     let mut positions = <(Entity, &Point, &Name)>::query();
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
@@ -27,4 +28,14 @@ pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camer
             draw_batch.print(screen_pos, &display);
         });
     draw_batch.submit(10100).expect("Batch error");
+
+    if let Some(target) = <&Targeting>::query()
+        .iter(ecs)
+        .find_map(|targeting| targeting.current_target)
+    {
+        if let Ok(target_ref) = ecs.entry_ref(target) {
+            let target_pos = target_ref.get_component::<Point>();
+            println!("{:?}", target_pos);
+        }
+    }
 }

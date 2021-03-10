@@ -2,6 +2,8 @@
 
 # General
 ## ToDo
+- inputsystem refactoren (haal delta weg)
+- Refactor unwraps
 - Refactor combat system
     - ranged en melee proper uit elkaar halen (aparte systemen?)
     - if isplayer werkt enkel als enkel de player aangevallen wordt!!!

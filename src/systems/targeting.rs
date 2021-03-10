@@ -38,17 +38,20 @@ pub fn targetting(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut Comm
             None
         } else {
             let mut target = None;
-            if player_targetting.index == targets.len() - 1 {
+            if player_targetting.index > targets.len() - 1 && player_targetting.index < usize::MAX {
                 new_index = usize::MAX;
                 target = None
             } else {
-                if player_targetting.index == usize::MAX {
+                if player_targetting.index == usize::MAX
+                    || player_targetting.index == targets.len() - 1
+                {
                     new_index = 0;
                 } else {
                     new_index = player_targetting.index + 1;
                 }
                 target = Some(targets[new_index].0);
             }
+            println!("{}", new_index);
             target
         };
         commands.add_component(

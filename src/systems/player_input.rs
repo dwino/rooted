@@ -1,4 +1,6 @@
-use crate::prelude::*;
+use std::i32::MAX;
+
+use crate::{prelude::*, turn_state};
 
 #[system]
 #[read_component(Point)]
@@ -27,7 +29,8 @@ pub fn player_input(
         .unwrap();
     let mut player_fov = <&FieldOfView>::query().filter(component::<Player>());
 
-    let mut delta = Point::zero();
+    let mut delta = Point::new(i32::MAX, i32::MAX);
+    let consumed_turn_delta = Point::new(i32::MAX - 1, i32::MAX - 1);
 
     if let Some(key) = *key {
         match key {
@@ -86,6 +89,7 @@ pub fn player_input(
                         },
                     ));
                     *turn_state = TurnState::PlayerTurn;
+                    println!("shootattempt");
                 } else {
                     println!("nothing targeted");
                 }
@@ -98,26 +102,52 @@ pub fn player_input(
                 {
                     if projectile.0 >= 1 {
                         commands.push(((), WantsCycleTarget {}));
-                        *turn_state = TurnState::PlayerTurn;
+                        *turn_state = TurnState::AwaitingInput;
                         println!("dit lukt nog");
                     }
                 }
             }
-            VirtualKeyCode::Key1 => use_item(0, ecs, commands, player_entity),
-            VirtualKeyCode::Key2 => use_item(1, ecs, commands, player_entity),
-            VirtualKeyCode::Key3 => use_item(2, ecs, commands, player_entity),
-            VirtualKeyCode::Key4 => use_item(3, ecs, commands, player_entity),
-            VirtualKeyCode::Key5 => use_item(4, ecs, commands, player_entity),
-            VirtualKeyCode::Key6 => use_item(5, ecs, commands, player_entity),
-            VirtualKeyCode::Key7 => use_item(6, ecs, commands, player_entity),
-            VirtualKeyCode::Key8 => use_item(7, ecs, commands, player_entity),
-            VirtualKeyCode::Key9 => use_item(8, ecs, commands, player_entity),
+            VirtualKeyCode::Key1 => {
+                use_item(0, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key2 => {
+                use_item(1, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key3 => {
+                use_item(2, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key4 => {
+                use_item(3, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key5 => {
+                use_item(4, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key6 => {
+                use_item(5, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key7 => {
+                use_item(6, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key8 => {
+                use_item(7, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
+            VirtualKeyCode::Key9 => {
+                use_item(8, ecs, commands, player_entity);
+                delta = consumed_turn_delta;
+            }
             _ => (),
         };
 
-        let destination = player_pos + delta;
-
-        if delta.x != 0 || delta.y != 0 {
+        if (delta.x != 0 || delta.y != 0) && (delta.x < i32::MAX - 1 && delta.y < i32::MAX - 1) {
+            let destination = player_pos + delta;
             let mut hit_something = false;
             enemies
                 .iter(ecs)
@@ -143,9 +173,15 @@ pub fn player_input(
                     },
                 ));
             }
-        };
+            *turn_state = TurnState::PlayerTurn;
+        }
 
-        *turn_state = TurnState::PlayerTurn;
+        //TODO: check if consumed turn in a less hacky way
+        if delta.x == i32::MAX || delta.y == i32::MAX {
+            *turn_state = TurnState::AwaitingInput;
+        } else if delta.x == i32::MAX - 1 || delta.y == i32::MAX - 1 {
+            *turn_state = TurnState::PlayerTurn;
+        }
     }
 }
 

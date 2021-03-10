@@ -129,3 +129,6 @@ pub struct ActivateItem {
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsCycleTarget {}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantEndInput(pub TurnState);

@@ -1,3 +1,27 @@
+# 210310
+## Cleanup & Balancing
+- remove println's
+- reset hp to 10
+- balancing + poison dart
+## General
+- end_input_system implemented
+- inputsystem refactor, no delta's, fn's
+- git version control
+## Features
+-stacked (amount) projectiles
+    - (X) base
+    - (X) print stack in hud
+-targeting (check rustyrogueliketutorial)
+    - (X) targetable component for creatures
+    - (X) targetting component for player
+    - (X) playerinput 'tab' sends CycleTargetting messages (van Max   tot len)
+    - targettingsystem
+        - (X) checks CycleTargetting message
+        - (X) querys tragetables in playerfov
+        - (X) targets next index
+- Kenney Tiles test?
+
+
 # 210308 MVP!
 - basic content 
     - (X) 3 creatures 

@@ -27,15 +27,16 @@ pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camer
                 };
             draw_batch.print(screen_pos, &display);
         });
-    draw_batch.submit(10100).expect("Batch error");
 
     if let Some(target) = <&Targeting>::query()
         .iter(ecs)
         .find_map(|targeting| targeting.current_target)
     {
         if let Ok(target_ref) = ecs.entry_ref(target) {
-            let target_pos = target_ref.get_component::<Point>();
-            println!("{:?}", target_pos);
+            let target_pos = target_ref.get_component::<Point>().unwrap();
+            let screen_pos = (*target_pos - offset) * TOOLTIP_SCALE;
+            draw_batch.print(screen_pos, "target".to_string());
         }
     }
+    draw_batch.submit(10100).expect("Batch error");
 }

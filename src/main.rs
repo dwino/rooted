@@ -19,7 +19,7 @@ mod prelude {
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT;
     pub const TILE_DIMENSIONS: i32 = 16;
-    pub const TOOLTIP_SCALE: i32 = TILE_DIMENSIONS / 8;
+    pub const TOOLTIP_SCALE: f32 = TILE_DIMENSIONS as f32 / 8.0;
     pub use crate::camera::*;
     pub use crate::components::*;
     pub use crate::map::*;
@@ -237,10 +237,10 @@ fn main() -> BError {
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         .with_tile_dimensions(TILE_DIMENSIONS, TILE_DIMENSIONS)
         .with_resource_path("resources/")
-        .with_font("kenney_rooted8x8.png", 8, 8)
+        .with_font("Kren_13x13.png", 13, 13)
         .with_font("terminal8x8.png", 8, 8)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "kenney_rooted8x8.png")
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "kenney_rooted8x8.png")
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Kren_13x13.png")
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Kren_13x13.png")
         .with_simple_console_no_bg(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, "terminal8x8.png")
         .build()?;
 

@@ -9,7 +9,7 @@ use crate::prelude::*;
 #[read_component(Player)]
 #[read_component(Entity)]
 
-pub fn targetting(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut CommandBuffer) {
+pub fn targetting(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
     //1. Check WantsCycleTarget message
     if let Some(message) = <(Entity, &WantsCycleTarget)>::query()
         .iter(ecs)
@@ -37,7 +37,7 @@ pub fn targetting(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut Comm
         let current_target = if targets.is_empty() {
             None
         } else {
-            let mut target = None;
+            let target;
             if player_targetting.index > targets.len() - 1 && player_targetting.index < usize::MAX {
                 new_index = usize::MAX;
                 target = None
@@ -51,7 +51,6 @@ pub fn targetting(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut Comm
                 }
                 target = Some(targets[new_index].0);
             }
-            println!("{}", new_index);
             target
         };
         commands.add_component(

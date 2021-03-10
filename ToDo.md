@@ -7,40 +7,22 @@
     - ranged en melee proper uit elkaar halen (aparte systemen?)
     - if isplayer werkt enkel als enkel de player aangevallen wordt!!!
 ## Done
-- end_input_system implemented
-- inputsystem refactor, no delta's, fn's
-- git version control
 
 ## Features
 ### ToDo
-3. make entity theme for tileset (similar to maptheme)
-4. animate projectiles
+- add to stack when equiped
+- make entity theme for tileset (similar to maptheme)
+- animate projectiles
 ### Done
--stacked (amount) projectiles
-    - (X) base
-    - (X) print stack in hud
-    - () add to stack when equiped
--targeting (check rustyrogueliketutorial)
-    - (X) targetable component for creatures
-    - (X) targetting component for player
-    - (X) playerinput 'tab' sends CycleTargetting messages (van Max   tot len)
-    - targettingsystem
-        - (X) checks CycleTargetting message
-        - (X) querys tragetables in playerfov
-        - (X) targets next index
-- Kenney Tiles test?
-
 
 ## Balance
 ### ToDo
-
 ### Done
-
 
 ## Bugs
 ### ToDo
+- targetting is still buggy, after firing up all projectiles the target needs to be reset (something needs to be reset)
 ### Done
-- equiped items don't stay on levelchange
 
 
 ## Stretch Goals

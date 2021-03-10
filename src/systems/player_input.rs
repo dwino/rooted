@@ -1,4 +1,4 @@
-use crate::{prelude::*, turn_state};
+use crate::prelude::*;
 
 #[system]
 #[read_component(Point)]
@@ -18,10 +18,10 @@ pub fn player_input(
     commands: &mut CommandBuffer,
     #[resource] key: &Option<VirtualKeyCode>,
 ) {
-    let (player_entity, player_pos, player_fov) = <(Entity, &Point, &FieldOfView)>::query()
+    let (player_entity, player_pos) = <(Entity, &Point)>::query()
         .filter(component::<Player>())
         .iter(ecs)
-        .find_map(|(entity, pos, fov)| Some((*entity, *pos, fov)))
+        .find_map(|(entity, pos)| Some((*entity, *pos)))
         .unwrap();
 
     if let Some(key) = *key {

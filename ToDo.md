@@ -10,12 +10,20 @@
 
 ## Features
 ### ToDo
-- make entity theme for tileset (similar to maptheme)
 1. stacked (amount) projectiles
     - (X) base
     - (X) print stack in hud
     - () add to stack when equiped
 2. targetting (check rustyrogueliketutorial)
+    - (X) targetable component for creatures
+    - (X) targetting component for player
+    - (X) playerinput 'tab' sends CycleTargetting messages (van -1 tot len)
+    - targettingsystem
+        - (X) checks CycleTargetting message
+        - (X) querys tragetables in playerfov
+        - (X) targets next index
+3. make entity theme for tileset (similar to maptheme)
+4. animate projectiles
 ### Done
 - Kenney Tiles test?
 

@@ -17,6 +17,11 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             current: 100,
             max: 100,
         },
+        Targeting {
+            targets: Vec::new(),
+            current_target: None,
+            index: usize::MAX,
+        },
         FieldOfView::new(10),
         Damage(5),
     ));

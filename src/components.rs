@@ -34,6 +34,12 @@ pub struct Health {
     pub current: i32,
     pub max: i32,
 }
+pub struct Targeting {
+    pub targets: Vec<(Entity, f32)>, // (entity / distance)
+    pub current_target: Option<Entity>,
+    pub index: usize,
+}
+pub struct Targetable;
 #[derive(Clone, Debug, PartialEq)]
 pub struct FieldOfView {
     pub visible_tiles: HashSet<Point>,
@@ -121,3 +127,5 @@ pub struct ActivateItem {
     pub used_by: Entity,
     pub item: Entity,
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsCycleTarget {}

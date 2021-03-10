@@ -121,6 +121,8 @@ impl Templates {
                         max: template.hp.unwrap(),
                     },
                 );
+                commands.add_component(entity, Targetable {});
+
                 match template.ai_type.unwrap() {
                     AiType::MovingRandomly => {
                         commands.add_component(entity, MovingRandomly {});

@@ -14,12 +14,13 @@ mod prelude {
     pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
     pub use legion::*;
-    pub const SCREEN_WIDTH: i32 = 80;
-    pub const SCREEN_HEIGHT: i32 = 40;
-    pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH;
-    pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT;
-    pub const TILE_DIMENSIONS: i32 = 16;
-    pub const TOOLTIP_SCALE: f32 = TILE_DIMENSIONS as f32 / 8.0;
+    pub const SCREEN_WIDTH: i32 = 100;
+    pub const SCREEN_HEIGHT: i32 = 100;
+    pub const DISPLAY_WIDTH: i32 = 80;
+    pub const DISPLAY_HEIGHT: i32 = 50;
+    pub const TILE_DIMENSIONS_MAP: i32 = 13;
+    pub const TILE_DIMENSIONS_TOOLTIP: i32 = TILE_DIMENSIONS_MAP / 2;
+    pub const TOOLTIP_SCALE: i32 = TILE_DIMENSIONS_MAP / TILE_DIMENSIONS_TOOLTIP;
     pub use crate::camera::*;
     pub use crate::components::*;
     pub use crate::map::*;
@@ -235,13 +236,17 @@ fn main() -> BError {
         .with_title("Dungeon Crawler")
         .with_fps_cap(30.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        .with_tile_dimensions(TILE_DIMENSIONS, TILE_DIMENSIONS)
+        .with_tile_dimensions(TILE_DIMENSIONS_MAP, TILE_DIMENSIONS_MAP)
         .with_resource_path("resources/")
         .with_font("Kren_13x13.png", 13, 13)
         .with_font("terminal8x8.png", 8, 8)
         .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Kren_13x13.png")
         .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Kren_13x13.png")
-        .with_simple_console_no_bg(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, "terminal8x8.png")
+        .with_simple_console_no_bg(
+            DISPLAY_WIDTH * TOOLTIP_SCALE as i32,
+            DISPLAY_HEIGHT * TOOLTIP_SCALE as i32,
+            "terminal8x8.png",
+        )
         .build()?;
 
     main_loop(context, State::new())

@@ -3,6 +3,7 @@
 - remove println's
 - reset hp to 10
 - balancing + poison dart
+- tooltip layer shows target
 ## General
 - end_input_system implemented
 - inputsystem refactor, no delta's, fn's

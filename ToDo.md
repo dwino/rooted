@@ -2,10 +2,11 @@
 
 # General
 ## ToDo
-- Refactor unwraps
 - Refactor combat system
     - ranged en melee proper uit elkaar halen (aparte systemen?)
     - if isplayer werkt enkel als enkel de player aangevallen wordt!!!
+    - veroorzaakt wss bug bij projectiles
+- Refactor unwraps
 ## Done
 
 ## Features
@@ -21,7 +22,7 @@
 
 ## Bugs
 ### ToDo
-- targetting is still buggy, after firing up all projectiles the target needs to be reset (something needs to be reset)
+- targetting is still buggy, after firing up all projectiles the target needs to be reset (something needs to be reset) wss lijn 52 combat.rs!!!
 ### Done
 
 

@@ -8,6 +8,8 @@ impl MapArchitect for VornoiArchitect {
         let mut mb = MapBuilder {
             map: Map::new(SCREEN_WIDTH, SCREEN_HEIGHT),
             rooms: Vec::new(),
+            player_start: Point::zero(),
+            amulet_start: Point::zero(),
             monster_spawns: Vec::new(),
             theme: super::themes::RootedTheme::new(),
         };
@@ -21,6 +23,9 @@ impl MapArchitect for VornoiArchitect {
                 rng.range(1, SCREEN_HEIGHT - 1),
             ));
         }
+
+        mb.player_start = seeds[0];
+        mb.player_start = seeds[seeds.len() - 1];
 
         let mut membership = vec![0; SCREEN_WIDTH as usize * SCREEN_HEIGHT as usize];
         for (i, m) in membership.iter_mut().enumerate() {

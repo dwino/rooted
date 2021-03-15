@@ -19,6 +19,7 @@ pub fn foraging_ai(#[resource] map: &mut Map, ecs: &mut SubWorld, commands: &mut
         &map.forage_map,
         1024.0,
     );
+    println!("foragerai2");
 
     // dijkstra_map.map;
 
@@ -29,7 +30,11 @@ pub fn foraging_ai(#[resource] map: &mut Map, ecs: &mut SubWorld, commands: &mut
         {
             let destination = map.index_to_point2d(destination);
 
+            println!("forageraiDo");
+
             if map.can_enter_tile(destination) {
+                println!("forageraiMove");
+
                 commands.push((
                     (),
                     WantsToMove {

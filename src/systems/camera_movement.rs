@@ -8,6 +8,8 @@ pub fn camera_movement(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
 ) {
+    println!("camera");
+
     if let Some((message_entity, delta)) = <(Entity, &WantsToMoveCamera)>::query()
         .iter(ecs)
         .find_map(|(message_entity, message)| Some((message_entity, message.delta)))

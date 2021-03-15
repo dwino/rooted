@@ -8,10 +8,15 @@ impl MapArchitect for EmptyForagingArchitect {
         let mut mb = MapBuilder {
             map: Map::new(SCREEN_WIDTH, SCREEN_HEIGHT),
             rooms: Vec::new(),
+            player_start: Point::zero(),
+            amulet_start: Point::zero(),
             monster_spawns: Vec::new(),
             theme: super::themes::RootedTheme::new(),
         };
         mb.fill(TileType::Floor);
+
+        mb.player_start = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+        mb.amulet_start = mb.find_most_distant();
 
         for i in 0..2 {
             let center_idx = rng.random_slice_index(&mb.map.tiles).unwrap();

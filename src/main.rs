@@ -297,9 +297,6 @@ impl State {
         self.resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
         let mut map_builder = MapBuilder::new(&mut rng);
-        spawn_player(&mut self.ecs, map_builder.player_start);
-        let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
-        map_builder.map.tiles[exit_idx] = TileType::Exit;
         spawn_foraging_level(
             &mut self.ecs,
             &map_builder.map,

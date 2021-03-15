@@ -18,7 +18,7 @@ pub fn spawn_entities(
         .collect();
 
     for pt in nest_points {
-        println!("hit");
+        println!("hitnest");
         commands.push((
             pt,
             Render {
@@ -34,7 +34,7 @@ pub fn spawn_entities(
     }
 
     for pt in foraging_points {
-        println!("hit");
+        println!("hitforagepoints");
 
         commands.push((
             pt,

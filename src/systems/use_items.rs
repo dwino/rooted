@@ -9,10 +9,13 @@ use crate::prelude::*;
 #[read_component(Equiped)]
 #[read_component(Weapon)]
 pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] map: &mut Map) {
+    println!("useitem0");
     let mut healing_to_apply = Vec::<(Entity, i32)>::new();
     <(Entity, &ActivateItem)>::query()
         .iter(ecs)
         .for_each(|(entity, activate)| {
+            println!("useitem1");
+
             let item = ecs.entry_ref(activate.item);
             if let Ok(item) = item {
                 if let Ok(healing) = item.get_component::<ProvidesHealing>() {
@@ -29,6 +32,8 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
 
                     if let Ok(e) = ecs.entry_ref(activate.item) {
                         if e.get_component::<Weapon>().is_ok() {
+                            println!("useitem2");
+
                             <(Entity, &Equiped, &Weapon)>::query()
                                 .iter(ecs)
                                 .filter(|(_, c, _)| c.0 == activate.used_by)
@@ -50,6 +55,7 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                 }
             }
             commands.remove(*entity);
+            println!("useitem3");
         });
 
     for heal in &healing_to_apply {
@@ -59,4 +65,5 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
             }
         }
     }
+    println!("useitemend");
 }

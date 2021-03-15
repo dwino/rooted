@@ -2,12 +2,12 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(Point)]
-#[read_component(ChasingPlayer)]
+#[read_component(RangedAttackingPlayer)]
 #[read_component(FieldOfView)]
 #[read_component(Health)]
 #[read_component(Player)]
-pub fn chasing_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
-    let mut movers = <(Entity, &Point, &ChasingPlayer, &FieldOfView)>::query();
+pub fn ranged(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
+    let mut movers = <(Entity, &Point, &RangedAttackingPlayer, &FieldOfView)>::query();
     let mut positions = <(Entity, &Point, &Health)>::query();
     let mut player = <(&Point, &Player)>::query();
     let player_pos = player.iter(ecs).next().unwrap().0;
@@ -23,7 +23,7 @@ pub fn chasing_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandB
         let idx = map.point2d_to_index(*pos);
         if let Some(destination) = DijkstraMap::find_lowest_exit(&dijkstra_map, idx, map) {
             let distance = DistanceAlg::Pythagoras.distance2d(*pos, *player_pos);
-            let destination = if distance > 1.2 {
+            let destination = if distance > 3.6 {
                 map.index_to_point2d(destination)
             } else {
                 *player_pos
@@ -42,7 +42,7 @@ pub fn chasing_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandB
                     {
                         commands.push((
                             (),
-                            WantsToAttack {
+                            WantsToRangedAttack {
                                 attacker: *entity,
                                 victim: *victim,
                             },

@@ -11,8 +11,6 @@ pub fn movement(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
 ) {
-    println!("move0");
-
     if map.can_enter_tile(want_move.destination) {
         commands.add_component(want_move.entity, want_move.destination);
 
@@ -31,5 +29,4 @@ pub fn movement(
         }
     }
     commands.remove(*entity);
-    println!("moveend");
 }

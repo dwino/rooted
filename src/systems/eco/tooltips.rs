@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[read_component(Name)]
 #[read_component(FieldOfView)]
 #[read_component(Targeting)]
-pub fn eco_tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camera: &EcoCamera) {
+pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camera: &EcoCamera) {
     let mut positions = <(Entity, &Point, &Name)>::query();
     let offset = Point::new(camera.left_x, camera.top_y);
     let map_pos = *mouse_pos + offset;
@@ -14,7 +14,7 @@ pub fn eco_tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] c
     positions
         .iter(ecs)
         .filter(|(_, pos, _)| **pos == map_pos)
-        .for_each(|(entity, pos, name)| {
+        .for_each(|(entity, _, name)| {
             let screen_pos = *mouse_pos * TOOLTIP_SCALE;
             let display =
                 if let Ok(health) = ecs.entry_ref(*entity).unwrap().get_component::<Health>() {

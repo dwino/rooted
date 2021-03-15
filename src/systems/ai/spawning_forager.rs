@@ -4,13 +4,12 @@ use crate::prelude::*;
 #[read_component(Point)]
 #[read_component(SpawningForager)]
 #[read_component(Fruit)]
-pub fn spawning_forager(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
-    let mut forager_spawners = <(&Point, &SpawningForager)>::query();
+pub fn spawning_forager(ecs: &SubWorld, commands: &mut CommandBuffer) {
+    let mut forager_spawners = <&Point>::query().filter(component::<SpawningForager>());
     let mut rng = RandomNumberGenerator::new();
-    forager_spawners.iter(ecs).for_each(|(pos, spawner)| {
-        println!("spawn!");
+    forager_spawners.iter(ecs).for_each(|pos| {
         if rng.range(0, 10) < 1 {
-            let ant = commands.push((
+            commands.push((
                 *pos,
                 Render {
                     color: ColorPair::new(

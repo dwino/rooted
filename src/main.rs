@@ -18,8 +18,8 @@ mod prelude {
     pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
     pub use legion::*;
-    pub const SCREEN_WIDTH: i32 = 100;
-    pub const SCREEN_HEIGHT: i32 = 100;
+    pub const SCREEN_WIDTH: i32 = 80;
+    pub const SCREEN_HEIGHT: i32 = 50;
     pub const DISPLAY_WIDTH: i32 = 80;
     pub const DISPLAY_HEIGHT: i32 = 50;
     pub const TILE_DIMENSIONS_MAP: i32 = 13;
@@ -55,8 +55,8 @@ struct State {
 
 impl State {
     fn new() -> Self {
-        let mut ecs = World::default();
-        let mut resources = Resources::default();
+        let ecs = World::default();
+        let resources = Resources::default();
         Self {
             ecs,
             resources,
@@ -69,32 +69,6 @@ impl State {
             eco_render_systems: build_render_scheduler(),
         }
     }
-    // fn new() -> Self {
-    //     let mut ecs = World::default();
-    //     let mut resources = Resources::default();
-    //     let mut rng = RandomNumberGenerator::new();
-    //     let mut map_builder = MapBuilder::new(&mut rng);
-    //     spawn_player(&mut ecs, map_builder.player_start);
-    //     let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
-    //     map_builder.map.tiles[exit_idx] = TileType::Exit;
-    //     spawn_level(&mut ecs, &mut rng, 0, &map_builder.monster_spawns);
-    //     resources.insert(map_builder.map);
-    //     resources.insert(Camera::new(map_builder.player_start));
-    //     resources.insert(EcoCamera::new(map_builder.player_start));
-    //     resources.insert(TurnState::AwaitingInput);
-    //     resources.insert(GameMode::Menu);
-    //     resources.insert(map_builder.theme);
-    //     Self {
-    //         ecs,
-    //         resources,
-    //         rl_input_systems: build_rl_input_scheduler(),
-    //         rl_player_systems: build_rl_player_scheduler(),
-    //         rl_creature_and_plant_systems: build_rl_creature_and_plant_scheduler(),
-    //         eco_input_system: build_input_scheduler(),
-    //         eco_logic_systems: build_logic_scheduler(),
-    //         eco_render_systems: build_render_scheduler(),
-    //     }
-    // }
 
     //MODE:MENU
     ///////////
@@ -134,7 +108,13 @@ impl State {
         spawn_player(&mut self.ecs, map_builder.player_start);
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
-        spawn_level(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
+        // spawn_level(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
+        spawn_foraging_level(
+            &mut self.ecs,
+            &map_builder.map,
+            &map_builder.map.forage_map.nest_positions,
+            &map_builder.map.forage_map.forage_positions,
+        );
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
         self.resources.insert(RlState::AwaitingInput);
@@ -296,7 +276,7 @@ impl State {
         self.ecs = World::default();
         self.resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
-        let mut map_builder = MapBuilder::new(&mut rng);
+        let map_builder = MapBuilder::new(&mut rng);
         spawn_foraging_level(
             &mut self.ecs,
             &map_builder.map,

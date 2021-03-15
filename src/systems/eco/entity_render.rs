@@ -3,7 +3,7 @@ use crate::prelude::*;
 #[system]
 #[read_component(Point)]
 #[read_component(Render)]
-pub fn eco_entity_render(#[resource] camera: &EcoCamera, ecs: &SubWorld) {
+pub fn entity_render(#[resource] camera: &EcoCamera, ecs: &SubWorld) {
     let mut renderables = <(&Point, &Render)>::query();
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(1);

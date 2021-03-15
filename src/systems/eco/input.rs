@@ -12,28 +12,26 @@ use crate::prelude::*;
 #[read_component(FieldOfView)]
 #[read_component(Targeting)]
 #[read_component(WantsCycleTarget)]
-pub fn eco_input(
-    ecs: &mut SubWorld,
+pub fn input(
     commands: &mut CommandBuffer,
     #[resource] key: &Option<VirtualKeyCode>,
     #[resource] turn_state: &mut EcoState,
 ) {
     if let Some(key) = *key {
         match key {
-            VirtualKeyCode::Left => move_camera(ecs, commands, Point::new(-10, 0)),
-            VirtualKeyCode::Right => move_camera(ecs, commands, Point::new(10, 0)),
-            VirtualKeyCode::Up => move_camera(ecs, commands, Point::new(0, -10)),
-            VirtualKeyCode::Down => move_camera(ecs, commands, Point::new(0, 10)),
+            VirtualKeyCode::Left => move_camera(commands, Point::new(-10, 0)),
+            VirtualKeyCode::Right => move_camera(commands, Point::new(10, 0)),
+            VirtualKeyCode::Up => move_camera(commands, Point::new(0, -10)),
+            VirtualKeyCode::Down => move_camera(commands, Point::new(0, 10)),
             VirtualKeyCode::Space => match turn_state {
                 EcoState::Play => pause(commands),
                 EcoState::Pause => play(commands),
-                _ => {}
             },
             _ => send_end_input_message(commands, EcoState::Play),
         };
     }
 }
-fn move_camera(ecs: &mut SubWorld, commands: &mut CommandBuffer, delta: Point) {
+fn move_camera(commands: &mut CommandBuffer, delta: Point) {
     commands.push(((), WantsToMoveCamera { delta }));
 }
 

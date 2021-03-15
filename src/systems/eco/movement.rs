@@ -2,15 +2,13 @@ use crate::prelude::*;
 
 #[system(for_each)]
 #[read_component(FieldOfView)]
-pub fn eco_movement(
+pub fn movement(
     entity: &Entity,
     want_move: &WantsToMove,
     #[resource] map: &mut Map,
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
 ) {
-    println!("move0");
-
     if map.can_enter_tile(want_move.destination) {
         commands.add_component(want_move.entity, want_move.destination);
 
@@ -21,5 +19,4 @@ pub fn eco_movement(
         }
     }
     commands.remove(*entity);
-    println!("moveend");
 }

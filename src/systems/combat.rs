@@ -12,8 +12,6 @@ use crate::prelude::*;
 #[read_component(Equiped)]
 #[write_component(ProjectileStack)]
 pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
-    println!("combat0");
-
     let mut ranged_attackers = <(Entity, &WantsToRangedAttack)>::query();
     let ranged_victims: Vec<(Entity, Entity, Entity)> = ranged_attackers
         .iter(ecs)
@@ -150,5 +148,4 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
             }
             commands.remove(*message);
         });
-    println!("combatend");
 }

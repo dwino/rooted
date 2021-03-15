@@ -2,13 +2,11 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(FieldOfView)]
-pub fn eco_map_render(
+pub fn map_render(
     #[resource] map: &Map,
     #[resource] camera: &EcoCamera,
     #[resource] theme: &Box<dyn MapTheme>,
-    ecs: &SubWorld,
 ) {
-    println!("maprender");
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
 

@@ -57,12 +57,12 @@ impl MapArchitect for VornoiArchitect {
             }
         }
 
-        let start = find_start(&mb.map);
+        let start = find_start();
         mb.monster_spawns = mb.spawn_monsters(start, rng);
         mb
     }
 }
 
-fn find_start(map: &Map) -> Point {
+fn find_start() -> Point {
     Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 }

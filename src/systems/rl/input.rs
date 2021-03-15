@@ -13,7 +13,7 @@ use crate::prelude::*;
 #[read_component(FieldOfView)]
 #[read_component(Targeting)]
 #[read_component(WantsCycleTarget)]
-pub fn rl_input(
+pub fn input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
     #[resource] key: &Option<VirtualKeyCode>,

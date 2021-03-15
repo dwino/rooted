@@ -29,7 +29,6 @@ pub trait MapTheme: Sync + Send {
     fn out_fov_colorpair_to_render(&self, tile_type: TileType) -> ColorPair;
 }
 
-const NUM_ROOMS: usize = 20;
 pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,

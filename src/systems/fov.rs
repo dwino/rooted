@@ -4,7 +4,6 @@ use crate::prelude::*;
 #[read_component(Point)]
 #[write_component(FieldOfView)]
 pub fn fov(ecs: &mut SubWorld, #[resource] map: &Map) {
-    println!("fov0");
     let mut views = <(&Point, &mut FieldOfView)>::query();
     views
         .iter_mut(ecs)
@@ -13,5 +12,4 @@ pub fn fov(ecs: &mut SubWorld, #[resource] map: &Map) {
             fov.visible_tiles = field_of_view_set(*pos, fov.radius, map);
             fov.is_dirty = false;
         });
-    println!("fovend");
 }

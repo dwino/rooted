@@ -3,11 +3,15 @@ use std::collections::HashSet;
 
 mod camera;
 mod components;
+mod eco_camera;
+mod eco_state;
+mod forage_map;
+mod game_mode;
 mod map;
 mod map_builder;
+mod rl_state;
 mod spawner;
 mod systems;
-mod turn_state;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
@@ -23,48 +27,106 @@ mod prelude {
     pub const TOOLTIP_SCALE: i32 = TILE_DIMENSIONS_MAP / TILE_DIMENSIONS_TOOLTIP;
     pub use crate::camera::*;
     pub use crate::components::*;
+    pub use crate::eco_camera::*;
+    pub use crate::eco_state::*;
+    pub use crate::forage_map::*;
+    pub use crate::game_mode::*;
     pub use crate::map::*;
     pub use crate::map_builder::*;
+    pub use crate::rl_state::*;
     pub use crate::spawner::FruitType;
     pub use crate::spawner::*;
     pub use crate::systems::*;
-    pub use crate::turn_state::*;
 }
 
 use prelude::*;
 
 struct State {
     ecs: World,
+    mode: GameMode,
     resources: Resources,
-    input_systems: Schedule,
-    player_systems: Schedule,
-    creature_and_plant_systems: Schedule,
+    rl_input_systems: Schedule,
+    rl_player_systems: Schedule,
+    rl_creature_and_plant_systems: Schedule,
+    eco_input_system: Schedule,
+    eco_logic_systems: Schedule,
+    eco_render_systems: Schedule,
 }
 
 impl State {
     fn new() -> Self {
         let mut ecs = World::default();
         let mut resources = Resources::default();
-        let mut rng = RandomNumberGenerator::new();
-        let mut map_builder = MapBuilder::new(&mut rng);
-        spawn_player(&mut ecs, map_builder.player_start);
-        let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
-        map_builder.map.tiles[exit_idx] = TileType::Exit;
-        spawn_level(&mut ecs, &mut rng, 0, &map_builder.monster_spawns);
-        resources.insert(map_builder.map);
-        resources.insert(Camera::new(map_builder.player_start));
-        resources.insert(TurnState::AwaitingInput);
-        resources.insert(map_builder.theme);
         Self {
             ecs,
             resources,
-            input_systems: build_input_scheduler(),
-            player_systems: build_player_scheduler(),
-            creature_and_plant_systems: build_creature_and_plant_scheduler(),
+            mode: GameMode::Menu,
+            rl_input_systems: build_rl_input_scheduler(),
+            rl_player_systems: build_rl_player_scheduler(),
+            rl_creature_and_plant_systems: build_rl_creature_and_plant_scheduler(),
+            eco_input_system: build_input_scheduler(),
+            eco_logic_systems: build_logic_scheduler(),
+            eco_render_systems: build_render_scheduler(),
         }
     }
+    // fn new() -> Self {
+    //     let mut ecs = World::default();
+    //     let mut resources = Resources::default();
+    //     let mut rng = RandomNumberGenerator::new();
+    //     let mut map_builder = MapBuilder::new(&mut rng);
+    //     spawn_player(&mut ecs, map_builder.player_start);
+    //     let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
+    //     map_builder.map.tiles[exit_idx] = TileType::Exit;
+    //     spawn_level(&mut ecs, &mut rng, 0, &map_builder.monster_spawns);
+    //     resources.insert(map_builder.map);
+    //     resources.insert(Camera::new(map_builder.player_start));
+    //     resources.insert(EcoCamera::new(map_builder.player_start));
+    //     resources.insert(TurnState::AwaitingInput);
+    //     resources.insert(GameMode::Menu);
+    //     resources.insert(map_builder.theme);
+    //     Self {
+    //         ecs,
+    //         resources,
+    //         rl_input_systems: build_rl_input_scheduler(),
+    //         rl_player_systems: build_rl_player_scheduler(),
+    //         rl_creature_and_plant_systems: build_rl_creature_and_plant_scheduler(),
+    //         eco_input_system: build_input_scheduler(),
+    //         eco_logic_systems: build_logic_scheduler(),
+    //         eco_render_systems: build_render_scheduler(),
+    //     }
+    // }
 
-    fn reset_game_state(&mut self) {
+    //MODE:MENU
+    ///////////
+    fn main_menu(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(0);
+        ctx.cls();
+        ctx.print_centered(5, "RooTed");
+        ctx.print_centered(8, "(R) Roguelike Mode");
+        ctx.print_centered(9, "(E) Ecosystem Mode");
+        ctx.print_centered(10, "(Q) Quit");
+
+        if let Some(key) = ctx.key {
+            match key {
+                VirtualKeyCode::R => self.roguelike_mode(),
+                VirtualKeyCode::E => self.ecosystem_mode(),
+                VirtualKeyCode::Q => ctx.quitting = true,
+                _ => {}
+            }
+        }
+    }
+    fn roguelike_mode(&mut self) {
+        self.init_rl_game_state();
+        self.mode = GameMode::RogueLike;
+    }
+    fn ecosystem_mode(&mut self) {
+        self.init_eco_game_state();
+        self.mode = GameMode::Ecosystem;
+    }
+
+    //MODE:ROGUELIKE
+    ////////////////
+    fn init_rl_game_state(&mut self) {
         self.ecs = World::default();
         self.resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
@@ -75,11 +137,46 @@ impl State {
         spawn_level(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
-        self.resources.insert(TurnState::AwaitingInput);
+        self.resources.insert(RlState::AwaitingInput);
         self.resources.insert(map_builder.theme);
     }
 
-    fn advance_level(&mut self) {
+    fn execute_rl_game_state(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(0);
+        ctx.cls();
+        ctx.set_active_console(1);
+        ctx.cls();
+        ctx.set_active_console(2);
+        ctx.cls();
+        self.resources.insert(ctx.key);
+        ctx.set_active_console(0);
+        self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
+        let current_state = *self.resources.get::<RlState>().unwrap();
+        match current_state {
+            RlState::AwaitingInput => self
+                .rl_input_systems
+                .execute(&mut self.ecs, &mut self.resources),
+            RlState::PlayerTurn => {
+                self.rl_player_systems
+                    .execute(&mut self.ecs, &mut self.resources);
+            }
+            RlState::MonsterTurn => self
+                .rl_creature_and_plant_systems
+                .execute(&mut self.ecs, &mut self.resources),
+            RlState::GameOver => {
+                self.rl_game_over(ctx);
+            }
+            RlState::Victory => {
+                self.rl_victory(ctx);
+            }
+            RlState::NextLevel => {
+                self.rl_advance_level();
+            }
+        }
+        render_draw_buffer(ctx).expect("Render error");
+    }
+
+    fn rl_advance_level(&mut self) {
         let player_entity = *<Entity>::query()
             .filter(component::<Player>())
             .iter(&self.ecs)
@@ -140,11 +237,11 @@ impl State {
         );
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
-        self.resources.insert(TurnState::AwaitingInput);
+        self.resources.insert(RlState::AwaitingInput);
         self.resources.insert(map_builder.theme);
     }
 
-    fn game_over(&mut self, ctx: &mut BTerm) {
+    fn rl_game_over(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(2);
         ctx.print_color_centered(2, RED, BLACK, "Your quest has ended.");
         ctx.print_color_centered(
@@ -168,11 +265,11 @@ impl State {
         ctx.print_color_centered(9, GREEN, BLACK, "Press 1 to play again.");
 
         if let Some(VirtualKeyCode::Key1) = ctx.key {
-            self.reset_game_state();
+            self.init_rl_game_state();
         }
     }
 
-    fn victory(&mut self, ctx: &mut BTerm) {
+    fn rl_victory(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(2);
         ctx.print_color_centered(2, GREEN, BLACK, "You have won!");
         ctx.print_color_centered(
@@ -189,13 +286,36 @@ impl State {
         );
         ctx.print_color_centered(7, GREEN, BLACK, "Press 1 to play again.");
         if let Some(VirtualKeyCode::Key1) = ctx.key {
-            self.reset_game_state();
+            self.init_rl_game_state();
         }
     }
-}
 
-impl GameState for State {
-    fn tick(&mut self, ctx: &mut BTerm) {
+    //MODE:ECOSYSTEM
+    ////////////////
+    fn init_eco_game_state(&mut self) {
+        self.ecs = World::default();
+        self.resources = Resources::default();
+        let mut rng = RandomNumberGenerator::new();
+        let mut map_builder = MapBuilder::new(&mut rng);
+        spawn_player(&mut self.ecs, map_builder.player_start);
+        let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
+        map_builder.map.tiles[exit_idx] = TileType::Exit;
+        spawn_foraging_level(
+            &mut self.ecs,
+            &map_builder.map,
+            &map_builder.map.forage_map.nest_positions,
+            &map_builder.map.forage_map.forage_positions,
+        );
+        self.resources.insert(map_builder.map);
+        self.resources.insert(EcoCamera::new(Point::new(
+            SCREEN_WIDTH / 2,
+            SCREEN_HEIGHT / 2,
+        )));
+        self.resources.insert(EcoState::Play);
+        self.resources.insert(map_builder.theme);
+    }
+
+    fn execute_eco_game_state(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(0);
         ctx.cls();
         ctx.set_active_console(1);
@@ -205,29 +325,32 @@ impl GameState for State {
         self.resources.insert(ctx.key);
         ctx.set_active_console(0);
         self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
-        let current_state = *self.resources.get::<TurnState>().unwrap();
+        let current_state = *self.resources.get::<EcoState>().unwrap();
+
+        self.eco_input_system
+            .execute(&mut self.ecs, &mut self.resources);
+
         match current_state {
-            TurnState::AwaitingInput => self
-                .input_systems
-                .execute(&mut self.ecs, &mut self.resources),
-            TurnState::PlayerTurn => {
-                self.player_systems
+            EcoState::Play => {
+                self.eco_logic_systems
                     .execute(&mut self.ecs, &mut self.resources);
             }
-            TurnState::MonsterTurn => self
-                .creature_and_plant_systems
-                .execute(&mut self.ecs, &mut self.resources),
-            TurnState::GameOver => {
-                self.game_over(ctx);
-            }
-            TurnState::Victory => {
-                self.victory(ctx);
-            }
-            TurnState::NextLevel => {
-                self.advance_level();
-            }
+            EcoState::Pause => {}
         }
+        self.eco_render_systems
+            .execute(&mut self.ecs, &mut self.resources);
+
         render_draw_buffer(ctx).expect("Render error");
+    }
+}
+
+impl GameState for State {
+    fn tick(&mut self, ctx: &mut BTerm) {
+        match self.mode {
+            GameMode::Menu => self.main_menu(ctx),
+            GameMode::RogueLike => self.execute_rl_game_state(ctx),
+            GameMode::Ecosystem => self.execute_eco_game_state(ctx),
+        }
     }
 }
 

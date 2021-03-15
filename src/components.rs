@@ -26,6 +26,8 @@ pub struct Fruit;
 pub struct Item;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct AmuletOfYala;
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ForageSource;
 
 //PLAYER_AND_CREATURE_ATTRIBUTES
 
@@ -96,6 +98,12 @@ pub struct ProvidesDungeonMap;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MovingRandomly;
+#[derive(Clone, Debug, PartialEq)]
+pub struct PatrollingRandomly {
+    pub path: Option<Vec<usize>>,
+}
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Foraging;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChasingPlayer;
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -104,6 +112,8 @@ pub struct RangedAttackingPlayer;
 pub struct SpawningFruit {
     pub template: Template,
 }
+#[derive(Clone, Debug, PartialEq)]
+pub struct SpawningForager {}
 
 //MESSAGES
 
@@ -111,6 +121,16 @@ pub struct SpawningFruit {
 pub struct WantsToMove {
     pub entity: Entity,
     pub destination: Point,
+}
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsToDig {
+    pub entity: Entity,
+    pub destination: Point,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsToMoveCamera {
+    pub delta: Point,
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToAttack {
@@ -129,6 +149,7 @@ pub struct ActivateItem {
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsCycleTarget {}
-
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct WantsEndInput(pub TurnState);
+pub struct WantsEndInput(pub RlState);
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsStateSwitch(pub EcoState);

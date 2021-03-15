@@ -13,7 +13,7 @@ use crate::prelude::*;
 #[read_component(FieldOfView)]
 #[read_component(Targeting)]
 #[read_component(WantsCycleTarget)]
-pub fn player_input(
+pub fn rl_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
     #[resource] key: &Option<VirtualKeyCode>,
@@ -63,7 +63,7 @@ pub fn player_input(
             VirtualKeyCode::Key7 => use_item(6, ecs, commands, player_entity),
             VirtualKeyCode::Key8 => use_item(7, ecs, commands, player_entity),
             VirtualKeyCode::Key9 => use_item(8, ecs, commands, player_entity),
-            _ => send_end_input_message(commands, TurnState::AwaitingInput),
+            _ => send_end_input_message(commands, RlState::AwaitingInput),
         };
     }
 }
@@ -102,11 +102,11 @@ fn move_or_attack(
         ));
     }
     //Check again in movement or combat systems
-    send_end_input_message(commands, TurnState::PlayerTurn);
+    send_end_input_message(commands, RlState::PlayerTurn);
 }
 
 fn wait(commands: &mut CommandBuffer) {
-    commands.push(((), WantsEndInput(TurnState::PlayerTurn)));
+    commands.push(((), WantsEndInput(RlState::PlayerTurn)));
 }
 
 fn pick_up_item(
@@ -122,7 +122,7 @@ fn pick_up_item(
     {
         commands.remove_component::<Point>(*item_entity);
         commands.add_component(*item_entity, Carried(player_entity));
-        send_end_input_message(commands, TurnState::PlayerTurn);
+        send_end_input_message(commands, RlState::PlayerTurn);
     }
 }
 
@@ -140,10 +140,10 @@ fn shoot_or_throw(ecs: &mut SubWorld, commands: &mut CommandBuffer, player_entit
                         victim: target,
                     },
                 ));
-                send_end_input_message(commands, TurnState::PlayerTurn);
+                send_end_input_message(commands, RlState::PlayerTurn);
             }
             Err(_) => {
-                send_end_input_message(commands, TurnState::AwaitingInput);
+                send_end_input_message(commands, RlState::AwaitingInput);
             }
         }
     }
@@ -157,7 +157,7 @@ fn target(ecs: &mut SubWorld, commands: &mut CommandBuffer, player_entity: Entit
     {
         if projectile.0 >= 1 {
             commands.push(((), WantsCycleTarget {}));
-            send_end_input_message(commands, TurnState::AwaitingInput);
+            send_end_input_message(commands, RlState::AwaitingInput);
         }
     }
 }
@@ -178,10 +178,10 @@ fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer, player_e
                 item: item_entity,
             },
         ));
-        send_end_input_message(commands, TurnState::PlayerTurn);
+        send_end_input_message(commands, RlState::PlayerTurn);
     }
 }
 
-fn send_end_input_message(commands: &mut CommandBuffer, new_state: TurnState) {
+fn send_end_input_message(commands: &mut CommandBuffer, new_state: RlState) {
     commands.push(((), WantsEndInput(new_state)));
 }

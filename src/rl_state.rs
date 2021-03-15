@@ -1,5 +1,6 @@
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub enum TurnState {
+pub enum RlState {
+    //RL
     AwaitingInput,
     PlayerTurn,
     MonsterTurn,

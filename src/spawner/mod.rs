@@ -1,6 +1,27 @@
 use crate::prelude::*;
 mod template;
 pub use template::*;
+mod foraging_spawner;
+pub use foraging_spawner::*;
+
+pub fn spawn_level(
+    ecs: &mut World,
+    rng: &mut RandomNumberGenerator,
+    level: usize,
+    spawn_points: &[Point],
+) {
+    let template = Templates::load();
+    template.spawn_entities(ecs, rng, level, spawn_points);
+}
+
+pub fn spawn_foraging_level(
+    ecs: &mut World,
+    map: &Map,
+    nest_position: &Vec<usize>,
+    foraging_positions: &Vec<usize>,
+) {
+    foraging_spawner::spawn_entities(ecs, map, nest_position, foraging_positions)
+}
 
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     ecs.push((
@@ -25,16 +46,6 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
         FieldOfView::new(8),
         Damage(1),
     ));
-}
-
-pub fn spawn_level(
-    ecs: &mut World,
-    rng: &mut RandomNumberGenerator,
-    level: usize,
-    spawn_points: &[Point],
-) {
-    let template = Templates::load();
-    template.spawn_entities(ecs, rng, level, spawn_points);
 }
 
 pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {

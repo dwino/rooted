@@ -1,13 +1,13 @@
 use crate::prelude::*;
 
 #[system]
-#[read_component(WantsEndInput)]
-pub fn end_input(
+#[read_component(WantsStateSwitch)]
+pub fn state_switch(
     ecs: &SubWorld,
     commands: &mut CommandBuffer,
-    #[resource] turn_state: &mut RlState,
+    #[resource] turn_state: &mut EcoState,
 ) {
-    if let Some((message_entity, new_state)) = <(Entity, &WantsEndInput)>::query()
+    if let Some((message_entity, new_state)) = <(Entity, &WantsStateSwitch)>::query()
         .iter(ecs)
         .find_map(|(message_entity, message)| Some((message_entity, message.0)))
     {

@@ -18,9 +18,12 @@ impl MapArchitect for EmptyForagingArchitect {
         mb.player_start = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
         mb.amulet_start = mb.find_most_distant();
 
-        for i in 0..2 {
-            let center_idx = rng.random_slice_index(&mb.map.tiles).unwrap();
+        let mut ix = 50;
+
+        for i in 0..3 {
+            let center_idx = ix; //rng.random_slice_index(&mb.map.tiles).unwrap();
             let center_pt = mb.map.index_to_point2d(center_idx);
+            ix += 1800;
             if i == 0 {
                 mb.map.forage_map.nest_positions.push(center_idx)
             } else {

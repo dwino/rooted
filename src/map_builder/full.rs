@@ -20,10 +20,10 @@ impl MapArchitect for EmptyForagingArchitect {
 
         let mut ix = 50;
 
-        for i in 0..3 {
+        for i in 0..20 {
             let center_idx = ix; //rng.random_slice_index(&mb.map.tiles).unwrap();
             let center_pt = mb.map.index_to_point2d(center_idx);
-            ix += 1800;
+            ix += 150;
             if i == 0 {
                 mb.map.forage_map.nest_positions.push(center_idx)
             } else {

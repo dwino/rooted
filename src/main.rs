@@ -3,7 +3,7 @@ use std::collections::HashSet;
 
 mod camera;
 mod components;
-mod dk;
+mod dkm;
 mod eco_camera;
 mod eco_state;
 mod forage_map;
@@ -19,7 +19,6 @@ mod prelude {
     pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
     pub use legion::*;
-    pub use smallvec::SmallVec;
     pub const SCREEN_WIDTH: i32 = 80;
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DISPLAY_WIDTH: i32 = 80;
@@ -29,7 +28,7 @@ mod prelude {
     pub const TOOLTIP_SCALE: i32 = TILE_DIMENSIONS_MAP / TILE_DIMENSIONS_TOOLTIP;
     pub use crate::camera::*;
     pub use crate::components::*;
-    pub use crate::dk::*;
+    pub use crate::dkm::*;
     pub use crate::eco_camera::*;
     pub use crate::eco_state::*;
     pub use crate::forage_map::*;

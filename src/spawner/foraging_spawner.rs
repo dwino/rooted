@@ -18,6 +18,7 @@ pub fn spawn_entities(
         .collect();
 
     for pt in nest_points {
+        println!("nest");
         commands.push((
             pt,
             Render {
@@ -28,6 +29,10 @@ pub fn spawn_entities(
                 glyph: to_cp437('•'),
             },
             Name("Nest".to_string()),
+            Energy {
+                current: 50,
+                max: 100,
+            },
             SpawningForager {},
         ));
     }

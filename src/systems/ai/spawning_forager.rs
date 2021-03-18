@@ -8,7 +8,7 @@ pub fn spawning_forager(ecs: &SubWorld, commands: &mut CommandBuffer) {
     let mut forager_spawners = <&Point>::query().filter(component::<SpawningForager>());
     let mut rng = RandomNumberGenerator::new();
     forager_spawners.iter(ecs).for_each(|pos| {
-        if rng.range(0, 10) < 1 {
+        if rng.range(0, 10) < 10 {
             commands.push((
                 *pos,
                 Render {
@@ -22,7 +22,11 @@ pub fn spawning_forager(ecs: &SubWorld, commands: &mut CommandBuffer) {
                 Creature {},
                 FieldOfView::new(7),
                 Health { current: 2, max: 2 },
-                Targetable {},
+                Energy {
+                    current: 0,
+                    max: 10,
+                },
+                // Targetable {},
                 Foraging {},
             ));
         }

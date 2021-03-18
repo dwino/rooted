@@ -5,6 +5,9 @@ pub struct Player {
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Creature;
+//KIND
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Forager;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Plant;
 #[derive(Clone, Copy, Debug, PartialEq)]

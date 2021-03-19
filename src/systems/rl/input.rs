@@ -54,6 +54,7 @@ pub fn input(
             VirtualKeyCode::G => pick_up_item(ecs, commands, player_entity, player_pos),
             VirtualKeyCode::F => shoot_or_throw(ecs, commands, player_entity),
             VirtualKeyCode::Tab => target(ecs, commands, player_entity),
+            VirtualKeyCode::LShift => stop_targeting(commands),
             VirtualKeyCode::Key1 => use_item(0, ecs, commands, player_entity),
             VirtualKeyCode::Key2 => use_item(1, ecs, commands, player_entity),
             VirtualKeyCode::Key3 => use_item(2, ecs, commands, player_entity),
@@ -160,6 +161,11 @@ fn target(ecs: &mut SubWorld, commands: &mut CommandBuffer, player_entity: Entit
             send_end_input_message(commands, RlState::AwaitingInput);
         }
     }
+}
+
+fn stop_targeting(commands: &mut CommandBuffer) {
+    commands.push(((), WantsEndTargeting {}));
+    send_end_input_message(commands, RlState::AwaitingInput);
 }
 
 fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer, player_entity: Entity) {

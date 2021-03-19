@@ -41,3 +41,17 @@ impl FieldOfView {
         }
     }
 }
+#[derive(Clone, Debug, PartialEq)]
+pub struct TargetRange {
+    pub reachable_tiles: HashSet<Point>,
+    pub radius: i32,
+}
+
+impl TargetRange {
+    pub fn new(radius: i32) -> Self {
+        Self {
+            reachable_tiles: HashSet::new(),
+            radius,
+        }
+    }
+}

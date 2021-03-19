@@ -2,33 +2,33 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(WantsCycleTarget)]
+#[read_component(WantsEndTargeting)]
 #[read_component(Point)]
-#[read_component(FieldOfView)]
+#[read_component(TargetRange)]
 #[read_component(Targeting)]
 #[read_component(Targetable)]
 #[read_component(Player)]
 #[read_component(Entity)]
 
 pub fn targetting(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
-    //1. Check WantsCycleTarget message
     if let Some(message) = <(Entity, &WantsCycleTarget)>::query()
         .iter(ecs)
         .map(|(message_entity, _)| message_entity)
         .next()
     {
-        //2. Query PlayerEntity, Fov & Targetting
-        let (player_entity, player_pos, player_fov, player_targetting) =
-            <(Entity, &Point, &FieldOfView, &Targeting)>::query()
+        println!("targetting");
+        let (player_entity, player_pos, player_target_range, player_targetting) =
+            <(Entity, &Point, &TargetRange, &Targeting)>::query()
                 .filter(component::<Player>())
                 .iter(ecs)
-                .find_map(|(e, p, f, t)| Some((e, p, f, t)))
+                .find_map(|(e, p, tr, t)| Some((e, p, tr, t)))
                 .unwrap();
+        println!("targetting");
 
-        //3. Check targets in Fov
         let mut possible_targets = <(Entity, &Targetable, &Point)>::query();
         let mut targets = possible_targets
             .iter(ecs)
-            .filter(|(_, _, pt)| player_fov.visible_tiles.contains(&pt))
+            .filter(|(_, _, pt)| player_target_range.reachable_tiles.contains(&pt))
             .map(|(e, _, pt)| (*e, DistanceAlg::Pythagoras.distance2d(*player_pos, *pt)))
             .collect::<Vec<(Entity, f32)>>();
 
@@ -64,5 +64,23 @@ pub fn targetting(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
         commands.remove(*message);
     }
 
-    //3. Check targets in Fov
+    if let Some(message) = <(Entity, &WantsEndTargeting)>::query()
+        .iter(ecs)
+        .map(|(message_entity, _)| message_entity)
+        .next()
+    {
+        if let Some(targeting_entity) = <(Entity, &Targeting)>::query()
+            .iter(ecs)
+            .find_map(|(targeting_entity, targeting_component)| Some(targeting_entity))
+        {
+            commands.add_component(
+                *targeting_entity,
+                Targeting {
+                    targets: Vec::new(),
+                    current_target: None,
+                    index: usize::MAX,
+                },
+            )
+        }
+    }
 }

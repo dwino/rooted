@@ -3,6 +3,7 @@ use crate::prelude::*;
 #[system]
 #[read_component(Point)]
 #[write_component(FieldOfView)]
+#[write_component(TargetRange)]
 pub fn fov(ecs: &mut SubWorld, #[resource] map: &Map) {
     let mut views = <(&Point, &mut FieldOfView)>::query();
     views
@@ -12,4 +13,8 @@ pub fn fov(ecs: &mut SubWorld, #[resource] map: &Map) {
             fov.visible_tiles = field_of_view_set(*pos, fov.radius, map);
             fov.is_dirty = false;
         });
+    let mut ranges = <(&Point, &mut TargetRange)>::query();
+    ranges.iter_mut(ecs).for_each(|(pos, mut target_range)| {
+        target_range.reachable_tiles = field_of_view_set(*pos, target_range.radius, map);
+    });
 }

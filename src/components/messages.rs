@@ -32,6 +32,8 @@ pub struct ActivateItem {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsCycleTarget {}
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsEndTargeting {}
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsEndInput(pub RlState);
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsStateSwitch(pub EcoState);

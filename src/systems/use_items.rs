@@ -8,6 +8,7 @@ use crate::prelude::*;
 #[read_component(Equipment)]
 #[read_component(Equiped)]
 #[read_component(Weapon)]
+#[read_component(ProjectileStack)]
 pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] map: &mut Map) {
     let mut healing_to_apply = Vec::<(Entity, i32)>::new();
     <(Entity, &ActivateItem)>::query()
@@ -34,15 +35,22 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                                 .filter(|(_, c, _)| c.0 == activate.used_by)
                                 .for_each(|(e, _, _)| {
                                     commands.remove(*e);
+                                    println!("removed weapon");
                                 })
                         }
                         if e.get_component::<ProjectileStack>().is_ok() {
+                            let mut stack_amount = e.get_component::<ProjectileStack>().unwrap().0;
+                            println!("{}", stack_amount);
+
                             <(Entity, &Equiped, &ProjectileStack)>::query()
                                 .iter(ecs)
-                                .filter(|(_, c, _)| c.0 == activate.used_by)
-                                .for_each(|(e, _, _)| {
-                                    commands.remove(*e);
-                                })
+                                .filter(|(_, equiped, projectile)| equiped.0 == activate.used_by)
+                                .for_each(|(entity, _, projectile)| {
+                                    stack_amount += projectile.0;
+                                    commands.remove(*entity);
+                                    println!("removed stack");
+                                });
+                            commands.add_component(activate.item, ProjectileStack(stack_amount));
                         }
                     }
                 } else {

@@ -50,12 +50,11 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
 
             //TODO: check of de attacker de player is (nu check je enkel het victim), en algemeen opkuisen
             if !is_player {
-                if let (entity, ranged_damage, mut projectile) =
+                if let Some((entity, ranged_damage, mut projectile)) =
                     <(Entity, &Equiped, &RangedDamage, &mut ProjectileStack)>::query()
                         .iter_mut(ecs)
                         .filter(|(_, equiped, _, _)| equiped.0 == *attacker)
                         .find_map(|(entity, _, dmg, projectile)| Some((entity, dmg.0, projectile)))
-                        .unwrap()
                 {
                     weapon_damage = ranged_damage;
 

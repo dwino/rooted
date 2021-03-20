@@ -17,6 +17,7 @@ pub enum AiType {
     MovingRandomly,
     Chasing,
     RangedAttacking,
+    RatAi,
 }
 #[derive(Clone, Copy, Deserialize, Debug, PartialEq, Eq, Hash)]
 pub enum FruitType {
@@ -99,6 +100,7 @@ impl Templates {
             EntityType::Equipment => {
                 commands.add_component(entity, Item {});
                 commands.add_component(entity, Equipment {});
+                println!("added equipment");
             }
             EntityType::Fruit => commands.add_component(entity, Item {}),
             EntityType::Plant => {
@@ -133,6 +135,22 @@ impl Templates {
                     AiType::RangedAttacking => {
                         commands.add_component(entity, RangedAttackingPlayer {});
                     }
+                    AiType::RatAi => {
+                        commands.add_component(entity, RatAi {});
+                        commands.add_component(
+                            entity,
+                            PatrollingRandomly {
+                                path: Some(Vec::new()),
+                            },
+                        );
+                        commands.add_component(
+                            entity,
+                            Energy {
+                                current: 0,
+                                max: 50,
+                            },
+                        );
+                    }
                 }
             }
         }
@@ -163,7 +181,6 @@ impl Templates {
         if let Some(ranged_damage) = &template.base_ranged_damage {
             commands.add_component(entity, RangedDamage(*ranged_damage));
             if template.entity_type == EntityType::Equipment {
-                println!("addedprojstack");
                 commands.add_component(entity, ProjectileStack(3));
             }
         }

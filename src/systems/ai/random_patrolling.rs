@@ -1,11 +1,19 @@
+use std::convert::TryInto;
+
 use crate::prelude::*;
 
 #[system]
 #[read_component(Point)]
 #[write_component(PatrollingRandomly)]
 #[read_component(FieldOfView)]
+#[read_component(WantsToPatrolRandomly)]
 #[read_component(Health)]
 pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut CommandBuffer) {
+    let mut wants_to_patrol = <(Entity, &WantsToPatrolRandomly)>::query();
+    let mut patrol_entities: Vec<Entity> = wants_to_patrol
+        .iter(ecs)
+        .map(|(message_entity, message_component)| *message_entity)
+        .collect();
     let mut movers = <(Entity, &Point, &mut PatrollingRandomly, &FieldOfView)>::query();
     let mut positions = <&Point>::query();
 
@@ -18,15 +26,18 @@ pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &m
 
     movers
         .iter_mut(ecs)
+        .filter(|(e, _, _, _)| patrol_entities.contains(e))
         .for_each(|(entity, pos, patrol, _fov)| {
             let mut next_step = *pos;
 
             if let Some(path) = &mut patrol.path {
                 if !path.is_empty() {
+                    println!("notempty");
                     let next = path[0];
                     path.remove(0);
                     next_step = map.index_to_point2d(next);
                 } else if !search_targets.is_empty() {
+                    println!("newpath");
                     let mut rng = RandomNumberGenerator::new();
                     let target_idx = rng.random_slice_index(&search_targets).unwrap();
                     let target = search_targets[target_idx];
@@ -42,11 +53,13 @@ pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &m
                                 path: Some(finder.steps),
                             },
                         );
+                        println!("found path");
                     } else {
                         println!("Failed to find the path");
                     }
                 }
             }
+            println!("{:?} -> {:?}", pos, next_step);
             commands.push((
                 (),
                 WantsToMove {

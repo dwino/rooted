@@ -16,14 +16,12 @@ pub fn targetting(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
         .map(|(message_entity, _)| message_entity)
         .next()
     {
-        println!("targetting");
         let (player_entity, player_pos, player_target_range, player_targetting) =
             <(Entity, &Point, &TargetRange, &Targeting)>::query()
                 .filter(component::<Player>())
                 .iter(ecs)
                 .find_map(|(e, p, tr, t)| Some((e, p, tr, t)))
                 .unwrap();
-        println!("targetting");
 
         let mut possible_targets = <(Entity, &Targetable, &Point)>::query();
         let mut targets = possible_targets

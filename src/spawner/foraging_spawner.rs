@@ -18,7 +18,6 @@ pub fn spawn_entities(
         .collect();
 
     for pt in nest_points {
-        println!("nest");
         commands.push((
             pt,
             Render {

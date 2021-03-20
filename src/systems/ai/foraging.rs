@@ -53,7 +53,6 @@ pub fn foraging(#[resource] map: &mut Map, ecs: &mut SubWorld, commands: &mut Co
                         destination_point,
                     ) <= 1.0
                 {
-                    println!("near nest");
                     commands.add_component(
                         *nest_entity,
                         Energy {
@@ -74,7 +73,6 @@ pub fn foraging(#[resource] map: &mut Map, ecs: &mut SubWorld, commands: &mut Co
                     destination_point,
                 ) <= 1.0
                 {
-                    println!("near food");
                     commands.add_component(
                         *forager_entity,
                         Energy {

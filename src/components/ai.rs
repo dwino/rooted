@@ -18,3 +18,5 @@ pub struct SpawningFruit {
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct SpawningForager {}
+#[derive(Clone, Debug, PartialEq)]
+pub struct RatAi {}

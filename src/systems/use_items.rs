@@ -35,12 +35,10 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                                 .filter(|(_, c, _)| c.0 == activate.used_by)
                                 .for_each(|(e, _, _)| {
                                     commands.remove(*e);
-                                    println!("removed weapon");
                                 })
                         }
                         if e.get_component::<ProjectileStack>().is_ok() {
                             let mut stack_amount = e.get_component::<ProjectileStack>().unwrap().0;
-                            println!("{}", stack_amount);
 
                             <(Entity, &Equiped, &ProjectileStack)>::query()
                                 .iter(ecs)
@@ -48,7 +46,6 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                                 .for_each(|(entity, _, projectile)| {
                                     stack_amount += projectile.0;
                                     commands.remove(*entity);
-                                    println!("removed stack");
                                 });
                             commands.add_component(activate.item, ProjectileStack(stack_amount));
                         }

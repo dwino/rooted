@@ -51,7 +51,7 @@ Templates(
         ),
         Template(
             entity_type: Creature,
-            name : "Worm mass", glyph : 'w', color : "#CD7F32", levels : [ 0, 1, 2 ],
+            name : "Worm mass", glyph : 'w', color : "#CD7F32", levels : [ 1, 2 ],
             hp : Some(3),
             frequency: 8,
             ai_type: Some(MovingRandomly),
@@ -70,12 +70,12 @@ Templates(
         ),
         Template(
             entity_type: Creature,
-            name : "Rat", glyph : 'r', color : "#D3494E", levels : [ 2 ],
-            hp : Some(5),
-            frequency: 4,
-            ai_type: Some(Chasing),
-            base_damage: Some(3),
-            base_defense: Some(2),
+            name : "Rat", glyph : 'r', color : "#D3494E", levels : [ 0 ],
+            hp : Some(2),
+            frequency: 10,
+            ai_type: Some(RatAi),
+            base_damage: Some(2),
+            base_defense: Some(0),
 
         ),
     ],

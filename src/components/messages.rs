@@ -5,16 +5,6 @@ pub struct WantsToMove {
     pub destination: Point,
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct WantsToDig {
-    pub entity: Entity,
-    pub destination: Point,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct WantsToMoveCamera {
-    pub delta: Point,
-}
-#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToAttack {
     pub attacker: Entity,
     pub victim: Entity,
@@ -35,7 +25,5 @@ pub struct WantsCycleTarget {}
 pub struct WantsEndTargeting {}
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsEndInput(pub RlState);
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct WantsStateSwitch(pub EcoState);
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToPatrolRandomly {}

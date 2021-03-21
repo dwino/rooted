@@ -1,5 +1,3 @@
-use std::convert::TryInto;
-
 use crate::prelude::*;
 
 #[system]
@@ -10,9 +8,9 @@ use crate::prelude::*;
 #[read_component(Health)]
 pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &mut CommandBuffer) {
     let mut wants_to_patrol = <(Entity, &WantsToPatrolRandomly)>::query();
-    let mut patrol_entities: Vec<Entity> = wants_to_patrol
+    let patrol_entities: Vec<Entity> = wants_to_patrol
         .iter(ecs)
-        .map(|(message_entity, message_component)| *message_entity)
+        .map(|(message_entity, _message_component)| *message_entity)
         .collect();
     let mut movers = <(Entity, &Point, &mut PatrollingRandomly, &FieldOfView)>::query();
     let mut positions = <&Point>::query();

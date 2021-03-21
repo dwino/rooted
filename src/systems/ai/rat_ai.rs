@@ -1,4 +1,4 @@
-use std::{cmp::max, convert::TryInto};
+use std::cmp::max;
 
 use crate::prelude::*;
 
@@ -12,24 +12,19 @@ use crate::prelude::*;
 #[read_component(Equipment)]
 #[read_component(Energy)]
 pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
+    let mut rng = RandomNumberGenerator::new();
     let mut movers = <(Entity, &Point, &RatAi, &FieldOfView, &Energy)>::query();
-    let mut positions = <(Entity, &Point, &Health)>::query();
     let mut player = <(Entity, &Point, &Player)>::query();
     let player_entity = player.iter(ecs).next().unwrap().0;
     let player_pos = player.iter(ecs).next().unwrap().1;
     let player_idx = map.point2d_to_index(*player_pos);
     let mut equipment = <(Entity, &Equipment, &Point)>::query();
-    // let equipment_positions: Vec<&Point> = equipment
-    //     .iter(ecs)
-    //     .map(|(entity, _item, pos)| pos)
-    //     .collect();
 
     movers.iter(ecs).for_each(|(entity, pos, _, fov, energy)| {
         let mut search_targets: Vec<(usize, f32)> = Vec::new();
 
         let mut use_dijkstra_nav = false;
         let mut attack_player = false;
-        let mut eat_equipment = false;
         let mut acted = false;
 
         let distance_to_player = DistanceAlg::Pythagoras.distance2d(*pos, *player_pos);
@@ -52,16 +47,16 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         if !acted {
             if let Some(eq) = equipment
                 .iter(ecs)
-                .filter(|(item_entity, _item, item_pos)| {
+                .filter(|(_item_entity, _item, item_pos)| {
                     DistanceAlg::Pythagoras.distance2d(**item_pos, *pos) < 1.9
                 })
-                .find_map(|(item_entity, _item, item_pos)| Some(item_entity))
+                .find_map(|(item_entity, _item, _item_pos)| Some(item_entity))
             {
                 commands.remove(*eq);
                 commands.add_component(
                     *entity,
                     Energy {
-                        current: energy.max,
+                        current: energy.current + rng.range(energy.max / 5, energy.max),
                         max: energy.max,
                     },
                 );
@@ -75,13 +70,18 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         }
 
         if energy.current < energy.max / 2 {
+            if !search_targets.is_empty() {
+                search_targets = Vec::new();
+            }
+            search_targets.push((player_idx, -10.0));
+
             use_dijkstra_nav = true;
 
             let mut x = 0;
 
-            equipment.iter(ecs).for_each(|(entity, _equipment, pos)| {
+            equipment.iter(ecs).for_each(|(_entity, _equipment, pos)| {
                 let idx = map.point2d_to_index(*pos);
-                search_targets.push((idx, -10.0));
+                search_targets.push((idx, 0.0));
                 x += 1;
             });
         }

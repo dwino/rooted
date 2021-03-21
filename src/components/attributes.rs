@@ -24,7 +24,6 @@ pub struct FieldOfView {
     pub sensing: bool,
     pub is_dirty: bool,
 }
-
 impl FieldOfView {
     pub fn new(radius: i32) -> Self {
         Self {
@@ -34,7 +33,6 @@ impl FieldOfView {
             is_dirty: true,
         }
     }
-
     pub fn clone_dirty(&self) -> Self {
         Self {
             visible_tiles: HashSet::new(),
@@ -49,7 +47,6 @@ pub struct TargetRange {
     pub reachable_tiles: HashSet<Point>,
     pub radius: i32,
 }
-
 impl TargetRange {
     pub fn new(radius: i32) -> Self {
         Self {

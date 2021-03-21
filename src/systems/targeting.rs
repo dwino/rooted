@@ -69,7 +69,7 @@ pub fn targetting(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
     {
         if let Some(targeting_entity) = <(Entity, &Targeting)>::query()
             .iter(ecs)
-            .find_map(|(targeting_entity, targeting_component)| Some(targeting_entity))
+            .find_map(|(targeting_entity, _targeting_component)| Some(targeting_entity))
         {
             commands.add_component(
                 *targeting_entity,
@@ -80,5 +80,6 @@ pub fn targetting(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
                 },
             )
         }
+        commands.remove(*message);
     }
 }

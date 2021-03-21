@@ -4,9 +4,6 @@ use std::collections::HashSet;
 mod camera;
 mod components;
 mod dkm;
-mod eco_camera;
-mod eco_state;
-mod forage_map;
 mod game_mode;
 mod map;
 mod map_builder;
@@ -19,19 +16,16 @@ mod prelude {
     pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
     pub use legion::*;
-    pub const SCREEN_WIDTH: i32 = 80;
-    pub const SCREEN_HEIGHT: i32 = 50;
+    pub const SCREEN_WIDTH: i32 = 120;
+    pub const SCREEN_HEIGHT: i32 = 75;
     pub const DISPLAY_WIDTH: i32 = 80;
     pub const DISPLAY_HEIGHT: i32 = 50;
-    pub const TILE_DIMENSIONS_MAP: i32 = 13;
+    pub const TILE_DIMENSIONS_MAP: i32 = 16;
     pub const TILE_DIMENSIONS_TOOLTIP: i32 = TILE_DIMENSIONS_MAP / 2;
     pub const TOOLTIP_SCALE: i32 = TILE_DIMENSIONS_MAP / TILE_DIMENSIONS_TOOLTIP;
     pub use crate::camera::*;
     pub use crate::components::*;
     pub use crate::dkm::*;
-    pub use crate::eco_camera::*;
-    pub use crate::eco_state::*;
-    pub use crate::forage_map::*;
     pub use crate::game_mode::*;
     pub use crate::map::*;
     pub use crate::map_builder::*;
@@ -50,9 +44,6 @@ struct State {
     rl_input_systems: Schedule,
     rl_player_systems: Schedule,
     rl_creature_and_plant_systems: Schedule,
-    eco_input_system: Schedule,
-    eco_logic_systems: Schedule,
-    eco_render_systems: Schedule,
 }
 
 impl State {
@@ -66,9 +57,6 @@ impl State {
             rl_input_systems: build_rl_input_scheduler(),
             rl_player_systems: build_rl_player_scheduler(),
             rl_creature_and_plant_systems: build_rl_creature_and_plant_scheduler(),
-            eco_input_system: build_input_scheduler(),
-            eco_logic_systems: build_logic_scheduler(),
-            eco_render_systems: build_render_scheduler(),
         }
     }
 
@@ -77,15 +65,20 @@ impl State {
     fn main_menu(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(0);
         ctx.cls();
-        ctx.print_centered(5, "RooTed");
-        ctx.print_centered(8, "(R) Roguelike Mode");
-        ctx.print_centered(9, "(E) Ecosystem Mode");
-        ctx.print_centered(10, "(Q) Quit");
+        ctx.print_centered(5, "You are Root, a fraction of a tree's rootsystem.");
+        ctx.print_centered(7, "Your HomeTree is dying of thirst.");
+        ctx.print_centered(9, "Search for the Magical Water Droplet");
+        ctx.print_centered(11, "and save your Home Tree.");
+        ctx.print_centered(13, "Use wat grows on the trees for help, but be careful:");
+        ctx.print_centered(15, "other creatures are interested in these fruits too ...");
+
+        ctx.print_centered(19, "RooTed");
+        ctx.print_centered(22, "(S) Start Game");
+        ctx.print_centered(24, "(Q) Quit");
 
         if let Some(key) = ctx.key {
             match key {
-                VirtualKeyCode::R => self.roguelike_mode(),
-                VirtualKeyCode::E => self.ecosystem_mode(),
+                VirtualKeyCode::S => self.roguelike_mode(),
                 VirtualKeyCode::Q => ctx.quitting = true,
                 _ => {}
             }
@@ -94,10 +87,6 @@ impl State {
     fn roguelike_mode(&mut self) {
         self.init_rl_game_state();
         self.mode = GameMode::RogueLike;
-    }
-    fn ecosystem_mode(&mut self) {
-        self.init_eco_game_state();
-        self.mode = GameMode::Ecosystem;
     }
 
     //MODE:ROGUELIKE
@@ -268,56 +257,6 @@ impl State {
             self.init_rl_game_state();
         }
     }
-
-    //MODE:ECOSYSTEM
-    ////////////////
-    fn init_eco_game_state(&mut self) {
-        self.ecs = World::default();
-        self.resources = Resources::default();
-        let mut rng = RandomNumberGenerator::new();
-        let map_builder = MapBuilder::new(&mut rng);
-        spawn_foraging_level(
-            &mut self.ecs,
-            &map_builder.map,
-            &map_builder.map.forage_map.nest_positions,
-            &map_builder.map.forage_map.forage_positions,
-        );
-        self.resources.insert(map_builder.map);
-        self.resources.insert(EcoCamera::new(Point::new(
-            SCREEN_WIDTH / 2,
-            SCREEN_HEIGHT / 2,
-        )));
-        self.resources.insert(EcoState::Play);
-        self.resources.insert(map_builder.theme);
-    }
-
-    fn execute_eco_game_state(&mut self, ctx: &mut BTerm) {
-        ctx.set_active_console(0);
-        ctx.cls();
-        ctx.set_active_console(1);
-        ctx.cls();
-        ctx.set_active_console(2);
-        ctx.cls();
-        self.resources.insert(ctx.key);
-        ctx.set_active_console(0);
-        self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
-        let current_state = *self.resources.get::<EcoState>().unwrap();
-
-        self.eco_input_system
-            .execute(&mut self.ecs, &mut self.resources);
-
-        match current_state {
-            EcoState::Play => {
-                self.eco_logic_systems
-                    .execute(&mut self.ecs, &mut self.resources);
-            }
-            EcoState::Pause => {}
-        }
-        self.eco_render_systems
-            .execute(&mut self.ecs, &mut self.resources);
-
-        render_draw_buffer(ctx).expect("Render error");
-    }
 }
 
 impl GameState for State {
@@ -325,7 +264,6 @@ impl GameState for State {
         match self.mode {
             GameMode::Menu => self.main_menu(ctx),
             GameMode::RogueLike => self.execute_rl_game_state(ctx),
-            GameMode::Ecosystem => self.execute_eco_game_state(ctx),
         }
     }
 }
@@ -337,6 +275,7 @@ fn main() -> BError {
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         .with_tile_dimensions(TILE_DIMENSIONS_MAP, TILE_DIMENSIONS_MAP)
         .with_resource_path("resources/")
+        // .with_font("toi_rooted8x8.png", 8, 8)
         .with_font("Kren_13x13.png", 13, 13)
         .with_font("terminal8x8.png", 8, 8)
         .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Kren_13x13.png")

@@ -7,8 +7,6 @@ pub struct Player {
 pub struct Creature;
 //KIND
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Forager;
-#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Plant;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Fruit;
@@ -16,5 +14,3 @@ pub struct Fruit;
 pub struct Item;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MagicDroplet;
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ForageSource;

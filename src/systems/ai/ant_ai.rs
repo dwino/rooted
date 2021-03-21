@@ -1,4 +1,4 @@
-use std::{cmp::max, convert::TryInto};
+use std::cmp::max;
 
 use crate::prelude::*;
 
@@ -12,8 +12,8 @@ use crate::prelude::*;
 #[read_component(Fruit)]
 #[read_component(Energy)]
 pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
+    let mut rng = RandomNumberGenerator::new();
     let mut movers = <(Entity, &Point, &AntAi, &FieldOfView, &Energy)>::query();
-    let mut positions = <(Entity, &Point, &Health)>::query();
     let mut player = <(Entity, &Point, &Player)>::query();
     let player_entity = player.iter(ecs).next().unwrap().0;
     let player_pos = player.iter(ecs).next().unwrap().1;
@@ -25,7 +25,6 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
 
         let mut use_dijkstra_nav = false;
         let mut attack_player = false;
-        let mut eat_equipment = false;
         let mut acted = false;
 
         let distance_to_player = DistanceAlg::Pythagoras.distance2d(*pos, *player_pos);
@@ -48,16 +47,16 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         if !acted {
             if let Some(fr) = fruit
                 .iter(ecs)
-                .filter(|(item_entity, _item, item_pos)| {
+                .filter(|(_item_entity, _item, item_pos)| {
                     DistanceAlg::Pythagoras.distance2d(**item_pos, *pos) < 1.9
                 })
-                .find_map(|(item_entity, _item, item_pos)| Some(item_entity))
+                .find_map(|(item_entity, _item, _item_pos)| Some(item_entity))
             {
                 commands.remove(*fr);
                 commands.add_component(
                     *entity,
                     Energy {
-                        current: energy.max,
+                        current: energy.current + rng.range(energy.max / 5, energy.max),
                         max: energy.max,
                     },
                 );
@@ -66,7 +65,7 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         }
 
         if fov.visible_tiles.contains(&player_pos) {
-            search_targets.push((player_idx, 0.0));
+            search_targets.push((player_idx, -5.0));
             use_dijkstra_nav = true;
         }
 
@@ -75,7 +74,7 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
 
             let mut x = 0;
 
-            fruit.iter(ecs).for_each(|(entity, _fruit, pos)| {
+            fruit.iter(ecs).for_each(|(_entity, _fruit, pos)| {
                 let idx = map.point2d_to_index(*pos);
                 search_targets.push((idx, 0.0));
                 x += 1;

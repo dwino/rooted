@@ -15,8 +15,6 @@ pub enum EntityType {
 
 pub enum AiType {
     MovingRandomly,
-    Chasing,
-    RangedAttacking,
     RatAi,
     AntAi,
 }
@@ -150,12 +148,6 @@ impl Templates {
                     AiType::MovingRandomly => {
                         commands.add_component(entity, MovingRandomly {});
                     }
-                    AiType::Chasing => {
-                        commands.add_component(entity, ChasingPlayer {});
-                    }
-                    AiType::RangedAttacking => {
-                        commands.add_component(entity, RangedAttackingPlayer {});
-                    }
                     AiType::RatAi => {
                         commands.add_component(entity, RatAi {});
                         commands.add_component(
@@ -167,7 +159,7 @@ impl Templates {
                         commands.add_component(
                             entity,
                             Energy {
-                                current: rng.range(10, 25),
+                                current: rng.range(15, 30),
                                 max: 50,
                             },
                         );

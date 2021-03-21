@@ -2,5 +2,4 @@
 pub enum GameMode {
     Menu,
     RogueLike,
-    Ecosystem,
 }

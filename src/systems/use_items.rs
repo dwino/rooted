@@ -27,7 +27,7 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                     healing_to_apply.push((activate.used_by, healing.amount));
                 }
 
-                if let Ok(sensing) = item.get_component::<ProvidesSensing>() {
+                if let Ok(_sensing) = item.get_component::<ProvidesSensing>() {
                     player_is_sensing = true;
                 }
 

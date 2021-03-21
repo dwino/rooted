@@ -1,8 +1,6 @@
 use crate::prelude::*;
 mod template;
 pub use template::*;
-mod foraging_spawner;
-pub use foraging_spawner::*;
 
 pub fn spawn_level(
     ecs: &mut World,
@@ -14,19 +12,10 @@ pub fn spawn_level(
     template.spawn_entities(ecs, rng, level, spawn_points);
 }
 
-pub fn spawn_foraging_level(
-    ecs: &mut World,
-    map: &Map,
-    nest_position: &Vec<usize>,
-    foraging_positions: &Vec<usize>,
-) {
-    foraging_spawner::spawn_entities(ecs, map, nest_position, foraging_positions)
-}
-
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     let mut commands = legion::systems::CommandBuffer::new(ecs);
 
-    let player = ecs.push((
+    ecs.push((
         Player { map_level: 0 },
         pos,
         Render {
@@ -37,8 +26,8 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             glyph: to_cp437('@'),
         },
         Health {
-            current: 100,
-            max: 100,
+            current: 45,
+            max: 45,
         },
         Targeting {
             targets: Vec::new(),
@@ -49,8 +38,6 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
         TargetRange::new(5),
         Damage(1),
     ));
-
-    commands.add_component(player, Defense(1));
 }
 
 pub fn spawn_magic_droplet(ecs: &mut World, pos: Point) {

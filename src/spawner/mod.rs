@@ -35,8 +35,8 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             glyph: to_cp437('@'),
         },
         Health {
-            current: 10,
-            max: 10,
+            current: 100,
+            max: 100,
         },
         Targeting {
             targets: Vec::new(),

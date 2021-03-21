@@ -4,25 +4,21 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(Point)]
-#[read_component(RatAi)]
+#[read_component(AntAi)]
 #[read_component(FieldOfView)]
 #[read_component(Health)]
 #[read_component(Player)]
 #[read_component(Item)]
-#[read_component(Equipment)]
+#[read_component(Fruit)]
 #[read_component(Energy)]
-pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
-    let mut movers = <(Entity, &Point, &RatAi, &FieldOfView, &Energy)>::query();
+pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
+    let mut movers = <(Entity, &Point, &AntAi, &FieldOfView, &Energy)>::query();
     let mut positions = <(Entity, &Point, &Health)>::query();
     let mut player = <(Entity, &Point, &Player)>::query();
     let player_entity = player.iter(ecs).next().unwrap().0;
     let player_pos = player.iter(ecs).next().unwrap().1;
     let player_idx = map.point2d_to_index(*player_pos);
-    let mut equipment = <(Entity, &Equipment, &Point)>::query();
-    // let equipment_positions: Vec<&Point> = equipment
-    //     .iter(ecs)
-    //     .map(|(entity, _item, pos)| pos)
-    //     .collect();
+    let mut fruit = <(Entity, &Fruit, &Point)>::query();
 
     movers.iter(ecs).for_each(|(entity, pos, _, fov, energy)| {
         let mut search_targets: Vec<(usize, f32)> = Vec::new();
@@ -33,7 +29,7 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         let mut acted = false;
 
         let distance_to_player = DistanceAlg::Pythagoras.distance2d(*pos, *player_pos);
-        if distance_to_player < 1.2 {
+        if distance_to_player < 3.6 {
             attack_player = true;
         };
 
@@ -50,14 +46,14 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         }
 
         if !acted {
-            if let Some(eq) = equipment
+            if let Some(fr) = fruit
                 .iter(ecs)
                 .filter(|(item_entity, _item, item_pos)| {
                     DistanceAlg::Pythagoras.distance2d(**item_pos, *pos) < 1.9
                 })
                 .find_map(|(item_entity, _item, item_pos)| Some(item_entity))
             {
-                commands.remove(*eq);
+                commands.remove(*fr);
                 commands.add_component(
                     *entity,
                     Energy {
@@ -82,9 +78,9 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
 
             let mut x = 0;
 
-            equipment.iter(ecs).for_each(|(entity, _equipment, pos)| {
+            fruit.iter(ecs).for_each(|(entity, _fruit, pos)| {
                 let idx = map.point2d_to_index(*pos);
-                search_targets.push((idx, -10.0));
+                search_targets.push((idx, 0.0));
                 x += 1;
             });
         }

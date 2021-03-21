@@ -17,6 +17,12 @@ pub struct SpawningFruit {
     pub template: Template,
 }
 #[derive(Clone, Debug, PartialEq)]
+pub struct SpawningEquipment {
+    pub template: Template,
+}
+#[derive(Clone, Debug, PartialEq)]
 pub struct SpawningForager {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct RatAi {}
+#[derive(Clone, Debug, PartialEq)]
+pub struct AntAi {}

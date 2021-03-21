@@ -46,7 +46,25 @@ Templates(
         Template(
             entity_type: Plant,
             fruit_type: Some(Smelling),
-            name : "Smelling tree", glyph : '♠', color : "#71AA34", levels : [ 1, 2 ],
+            name : "Smelling Tree", glyph : '♠', color : "#71AA34", levels : [0, 1, 2 ],
+            frequency: 2,
+        ),
+        Template(
+            entity_type: Plant,
+            equipment_type: Some(Ranged),
+            name : "Ranged Tree", glyph : '♠', color : "#D3494E", levels : [ 0, 1, 2 ],
+            frequency: 3,
+        ),
+        Template(
+            entity_type: Plant,
+            equipment_type: Some(Melee),
+            name : "Melee Tree", glyph : '♠', color : "#7AC5CD", levels : [ 0, 1, 2 ],
+            frequency: 1,
+        ),
+        Template(
+            entity_type: Plant,
+            equipment_type: Some(Armour),
+            name : "Armour Tree", glyph : '♠', color : "#71AA34", levels : [ 0, 1, 2 ],
             frequency: 2,
         ),
         Template(
@@ -61,10 +79,10 @@ Templates(
         ),
         Template(
             entity_type: Creature,
-            name : "Ant", glyph : 'a', color : "#E3CF57", levels : [ 1, 2 ],
+            name : "Ant", glyph : 'a', color : "#E3CF57", levels : [ 0,1, 2 ],
             hp : Some(2),
-            frequency: 6,
-            ai_type: Some(RangedAttacking),
+            frequency: 10,
+            ai_type: Some(AntAi),
             base_damage: Some(1),
             base_ranged_damage: Some(2),
         ),
@@ -84,19 +102,42 @@ Templates(
             entity_type: Fruit,
             name : "Healing Fruit", glyph : '*', color : "#D3494E", levels : [],
             provides: Some([ ("Healing", 6) ]),
-            frequency: 1,
+            frequency: 10,
         ),
         Knowing: (
             entity_type: Fruit,
             name : "Knowing Fruit", glyph : '*', color : "#7AC5CD", levels : [],
             provides: Some([ ("MagicMap", 0) ]),
-            frequency: 1
+            frequency: 10
         ),
         Smelling: (
             entity_type: Fruit,
             name : "Smelly Fruit", glyph : '*', color : "#71AA34", levels : [],
             provides: Some([ ("MagicMap", 0), ("Healing", 3) ]),
-            frequency: 1
+            frequency: 10
+        ), 
+    },
+    equipments : {
+        Ranged: (
+            entity_type: Equipment,
+            name : "Thorn Dart", glyph: '{', color : "#D7E7D0", levels: [],
+            frequency: 3,
+            base_ranged_damage: Some(1),
+        ),
+        
+        Melee: (
+            entity_type: Equipment,
+            name : "Pointy Stick", glyph: '/', color : "#D7E7D0", levels: [],
+            frequency: 2,
+            base_damage: Some(2)
+        ),
+        
+        Armour: (
+            entity_type: Equipment,
+            name : "Bark Shield" , glyph: ')', color : "#215E21", levels: [],
+            frequency: 2,
+            base_defense: Some(1),
+
         ), 
     },
 )

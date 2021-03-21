@@ -18,12 +18,19 @@ pub enum AiType {
     Chasing,
     RangedAttacking,
     RatAi,
+    AntAi,
 }
 #[derive(Clone, Copy, Deserialize, Debug, PartialEq, Eq, Hash)]
 pub enum FruitType {
     Healing,
     Knowing,
     Smelling,
+}
+#[derive(Clone, Copy, Deserialize, Debug, PartialEq, Eq, Hash)]
+pub enum EquipmentType {
+    Ranged,
+    Melee,
+    Armour,
 }
 
 #[derive(Clone, Deserialize, Debug, PartialEq)]
@@ -36,6 +43,7 @@ pub struct Template {
     pub color: String,
     pub ai_type: Option<AiType>,
     pub fruit_type: Option<FruitType>,
+    pub equipment_type: Option<EquipmentType>,
     pub provides: Option<Vec<(String, i32)>>,
     pub hp: Option<i32>,
     pub base_damage: Option<i32>,
@@ -47,6 +55,7 @@ pub struct Template {
 pub struct Templates {
     pub entities: Vec<Template>,
     pub fruits: HashMap<FruitType, Template>,
+    pub equipments: HashMap<EquipmentType, Template>,
 }
 
 impl Templates {
@@ -76,7 +85,7 @@ impl Templates {
         let mut commands = legion::systems::CommandBuffer::new(ecs);
         spawn_points.iter().for_each(|pt| {
             if let Some(entity) = rng.random_slice_entry(&available_entities) {
-                self.spawn_entity(*pt, entity, &mut commands);
+                self.spawn_entity(*pt, entity, &mut commands, rng);
             }
         });
         commands.flush(ecs);
@@ -86,6 +95,7 @@ impl Templates {
         pt: Point,
         template: &Template,
         commands: &mut legion::systems::CommandBuffer,
+        rng: &mut RandomNumberGenerator,
     ) {
         let color_string = RGB::from_hex(template.color.clone()).expect("Bad Hex");
         let entity = commands.push((
@@ -105,13 +115,24 @@ impl Templates {
             EntityType::Fruit => commands.add_component(entity, Item {}),
             EntityType::Plant => {
                 commands.add_component(entity, Plant {});
-                let fruit_type = template.fruit_type.unwrap();
-                commands.add_component(
-                    entity,
-                    SpawningFruit {
-                        template: self.fruits.get(&fruit_type).unwrap().clone(),
-                    },
-                );
+                if let Some(fruit_type) = template.fruit_type {
+                    println!("{:?}", fruit_type);
+                    commands.add_component(
+                        entity,
+                        SpawningFruit {
+                            template: self.fruits.get(&fruit_type).unwrap().clone(),
+                        },
+                    );
+                }
+                if let Some(equipment_type) = template.equipment_type {
+                    println!("{:?}", equipment_type);
+                    commands.add_component(
+                        entity,
+                        SpawningEquipment {
+                            template: self.equipments.get(&equipment_type).unwrap().clone(),
+                        },
+                    );
+                }
             }
             EntityType::Creature => {
                 commands.add_component(entity, Creature {});
@@ -146,7 +167,24 @@ impl Templates {
                         commands.add_component(
                             entity,
                             Energy {
-                                current: 0,
+                                current: rng.range(10, 25),
+                                max: 50,
+                            },
+                        );
+                    }
+                    AiType::AntAi => {
+                        println!("added antai");
+                        commands.add_component(entity, AntAi {});
+                        commands.add_component(
+                            entity,
+                            PatrollingRandomly {
+                                path: Some(Vec::new()),
+                            },
+                        );
+                        commands.add_component(
+                            entity,
+                            Energy {
+                                current: rng.range(10, 25),
                                 max: 50,
                             },
                         );

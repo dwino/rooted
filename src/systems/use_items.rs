@@ -11,6 +11,8 @@ use crate::prelude::*;
 #[read_component(Weapon)]
 #[read_component(ProjectileStack)]
 #[read_component(Player)]
+#[read_component(Name)]
+#[read_component(Armour)]
 #[write_component(FieldOfView)]
 pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] map: &mut Map) {
     let mut healing_to_apply = Vec::<(Entity, i32)>::new();
@@ -26,7 +28,6 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                 }
 
                 if let Ok(sensing) = item.get_component::<ProvidesSensing>() {
-                    println!("usedsensing");
                     player_is_sensing = true;
                 }
 
@@ -47,15 +48,28 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                                     commands.remove(*e);
                                 })
                         }
+                        if e.get_component::<Armour>().is_ok() {
+                            <(Entity, &Equiped, &Armour)>::query()
+                                .iter(ecs)
+                                .filter(|(_, c, _)| c.0 == activate.used_by)
+                                .for_each(|(e, _, _)| {
+                                    commands.remove(*e);
+                                })
+                        }
                         if e.get_component::<ProjectileStack>().is_ok() {
                             let mut stack_amount = e.get_component::<ProjectileStack>().unwrap().0;
 
-                            <(Entity, &Equiped, &ProjectileStack)>::query()
+                            <(Entity, &Equiped, &ProjectileStack, &Name)>::query()
                                 .iter(ecs)
-                                .filter(|(_, equiped, projectile)| equiped.0 == activate.used_by)
-                                .for_each(|(entity, _, projectile)| {
-                                    stack_amount += projectile.0;
-                                    commands.remove(*entity);
+                                .filter(|(_, equiped, _projectile, _)| {
+                                    equiped.0 == activate.used_by
+                                })
+                                .for_each(|(entity, _, projectile, name)| {
+                                    let e_name = e.get_component::<Name>().unwrap();
+                                    if e_name.0 == name.0 {
+                                        stack_amount += projectile.0;
+                                        commands.remove(*entity);
+                                    }
                                 });
                             commands.add_component(activate.item, ProjectileStack(stack_amount));
                         }
@@ -77,6 +91,5 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
 
     if player_is_sensing {
         fov.iter_mut(ecs).next().unwrap().sensing = true;
-        println!("SENSING");
     }
 }

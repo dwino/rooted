@@ -111,12 +111,6 @@ impl State {
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
         spawn_level(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
-        // spawn_foraging_level(
-        //     &mut self.ecs,
-        //     &map_builder.map,
-        //     &map_builder.map.forage_map.nest_positions,
-        //     &map_builder.map.forage_map.forage_positions,
-        // );
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
         self.resources.insert(RlState::AwaitingInput);
@@ -192,7 +186,10 @@ impl State {
 
         <&mut FieldOfView>::query()
             .iter_mut(&mut self.ecs)
-            .for_each(|fov| fov.is_dirty = true);
+            .for_each(|fov| {
+                fov.is_dirty = true;
+                fov.sensing = false;
+            });
 
         let mut rng = RandomNumberGenerator::new();
         let mut map_builder = MapBuilder::new(&mut rng);
@@ -230,7 +227,7 @@ impl State {
             4,
             WHITE,
             BLACK,
-            "Slain by a monster, your root's journey has come to a premature end.",
+            "Slain by a monster, root's journey has come to a premature end.",
         );
         ctx.print_color_centered(
             5,

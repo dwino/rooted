@@ -29,7 +29,7 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         let mut acted = false;
 
         let distance_to_player = DistanceAlg::Pythagoras.distance2d(*pos, *player_pos);
-        if distance_to_player < 3.6 {
+        if distance_to_player < 3.9 {
             attack_player = true;
         };
 

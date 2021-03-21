@@ -15,9 +15,12 @@ pub fn hud(ecs: &SubWorld) {
 
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(2);
-    draw_batch.print_centered(1, "Explore the Dungeon. 'vi-keys' to move & melee.");
-    draw_batch.print_centered(2, "'g' to get an item, '1-9' to use/equip.");
-    draw_batch.print_centered(3, "'f' to fire equiped(!) dart at random target.");
+    draw_batch.print_centered(1, "Explore! vi-keys to move / melee");
+    draw_batch.print_centered(2, "g gets an item, 1-9 uses / equips");
+
+    draw_batch.print_centered(3, "hover over entities for info");
+    draw_batch.print_centered(4, "tab cycles targets (Lshift stops targetting)");
+    draw_batch.print_centered(5, "f fires first equiped(!) darts");
 
     draw_batch.bar_horizontal(
         Point::zero(),

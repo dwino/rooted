@@ -24,7 +24,9 @@ pub fn spawn_foraging_level(
 }
 
 pub fn spawn_player(ecs: &mut World, pos: Point) {
-    ecs.push((
+    let mut commands = legion::systems::CommandBuffer::new(ecs);
+
+    let player = ecs.push((
         Player { map_level: 0 },
         pos,
         Render {
@@ -43,10 +45,12 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             current_target: None,
             index: usize::MAX,
         },
-        FieldOfView::new(20),
-        TargetRange::new(6),
+        FieldOfView::new(9),
+        TargetRange::new(5),
         Damage(1),
     ));
+
+    commands.add_component(player, Defense(1));
 }
 
 pub fn spawn_magic_droplet(ecs: &mut World, pos: Point) {

@@ -31,6 +31,9 @@ pub enum EquipmentType {
     Ranged,
     Melee,
     Armour,
+    RangedPlus,
+    MeleePlus,
+    ArmourPlus,
 }
 
 #[derive(Clone, Deserialize, Debug, PartialEq)]
@@ -194,10 +197,7 @@ impl Templates {
                 .iter()
                 .for_each(|(provides, n)| match provides.as_str() {
                     "Healing" => commands.add_component(entity, ProvidesHealing { amount: *n }),
-                    "Sensing" => {
-                        println!("providessensing");
-                        commands.add_component(entity, ProvidesSensing { amount: *n })
-                    }
+                    "Sensing" => commands.add_component(entity, ProvidesSensing { amount: *n }),
                     "MagicMap" => commands.add_component(entity, ProvidesDungeonMap {}),
                     _ => {
                         println!("Warning: we don't know how to provide {}", provides);

@@ -14,4 +14,4 @@ You are Root, a fraction of a tree's rootsystem.  Your tree is dying due to a po
 
 ## Current status
 
-Before going down the road (again) of endlessly thinkering on systems of which I'm not sure why or if (and how) the should be included, and then losing motivation, I'm calling It 1.0. It's playable, even winnable (and losable). It's got a few levels, a few creatures, a few items and a few maps. I still like the idea, so maybe I'll revisit it one day. There's an ascii version and a version that uses kenney's tiles.
+Before going down the road (again) of endlessly thinkering on systems of which I'm not sure why or if (and how) they should be included, and then losing motivation, I'm calling this version 1.0. It's playable, even winnable (and losable). It's got a few levels, a few creatures, a few items and a few maps. I still like the idea, so maybe I'll revisit it one day. There's an ascii version and a version that uses kenney's tiles. So: my first 'published' game :).

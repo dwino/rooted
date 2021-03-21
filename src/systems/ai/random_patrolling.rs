@@ -32,12 +32,10 @@ pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &m
 
             if let Some(path) = &mut patrol.path {
                 if !path.is_empty() {
-                    println!("notempty");
                     let next = path[0];
                     path.remove(0);
                     next_step = map.index_to_point2d(next);
                 } else if !search_targets.is_empty() {
-                    println!("newpath");
                     let mut rng = RandomNumberGenerator::new();
                     let target_idx = rng.random_slice_index(&search_targets).unwrap();
                     let target = search_targets[target_idx];
@@ -53,13 +51,11 @@ pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &m
                                 path: Some(finder.steps),
                             },
                         );
-                        println!("found path");
                     } else {
                         println!("Failed to find the path");
                     }
                 }
             }
-            println!("{:?} -> {:?}", pos, next_step);
             commands.push((
                 (),
                 WantsToMove {

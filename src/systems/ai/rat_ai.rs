@@ -74,10 +74,7 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
             use_dijkstra_nav = true;
         }
 
-        println!("{:?}, {}", energy.current, energy.max);
-
         if energy.current < energy.max / 2 {
-            println!("hungry");
             use_dijkstra_nav = true;
 
             let mut x = 0;

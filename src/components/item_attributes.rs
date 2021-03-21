@@ -22,5 +22,8 @@ pub struct Defense(pub i32);
 pub struct ProvidesHealing {
     pub amount: i32,
 }
+pub struct ProvidesSensing {
+    pub amount: i32,
+}
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProvidesDungeonMap;

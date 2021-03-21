@@ -5,6 +5,7 @@ use crate::prelude::*;
 #[read_component(Render)]
 #[read_component(FieldOfView)]
 #[read_component(Player)]
+#[read_component(Plant)]
 pub fn entity_render(#[resource] camera: &Camera, ecs: &SubWorld) {
     let mut renderables = <(&Point, &Render)>::query();
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
@@ -20,6 +21,14 @@ pub fn entity_render(#[resource] camera: &Camera, ecs: &SubWorld) {
         .for_each(|(pos, render)| {
             draw_batch.set(*pos - offset, render.color, render.glyph);
         });
+
+    if player_fov.sensing {
+        <(&Point, &Render, &Plant)>::query()
+            .iter(ecs)
+            .for_each(|(pos, render, _)| {
+                draw_batch.set(*pos - offset, render.color, render.glyph);
+            });
+    }
 
     draw_batch.submit(5000).expect("Batch error");
 }

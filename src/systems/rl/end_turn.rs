@@ -4,10 +4,10 @@ use crate::prelude::*;
 #[read_component(Health)]
 #[read_component(Point)]
 #[read_component(Player)]
-#[read_component(AmuletOfYala)]
+#[read_component(MagicDroplet)]
 pub fn end_turn(ecs: &SubWorld, #[resource] turn_state: &mut RlState, #[resource] map: &Map) {
     let mut player_hp = <(&Health, &Point)>::query().filter(component::<Player>());
-    let mut amulet = <&Point>::query().filter(component::<AmuletOfYala>());
+    let mut amulet = <&Point>::query().filter(component::<MagicDroplet>());
     let current_state = *turn_state;
 
     let mut new_state = match current_state {

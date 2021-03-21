@@ -49,18 +49,18 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
     ));
 }
 
-pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {
+pub fn spawn_magic_droplet(ecs: &mut World, pos: Point) {
     ecs.push((
         Item,
-        AmuletOfYala,
+        MagicDroplet,
         pos,
         Render {
             color: ColorPair::new(
                 RGB::from_hex("#5D76CB").unwrap(),
                 RGB::from_hex("#17111D").unwrap(),
             ),
-            glyph: to_cp437('☼'),
+            glyph: to_cp437('♥'),
         },
-        Name("Amulet of Yala".to_string()),
+        Name("Magic Droplet".to_string()),
     ));
 }

@@ -42,6 +42,10 @@ pub fn spawning_fruit(#[resource] map: &Map, ecs: &SubWorld, commands: &mut Comm
                             "Healing" => {
                                 commands.add_component(fruit, ProvidesHealing { amount: *n })
                             }
+                            "Sensing" => {
+                                println!("providessensing");
+                                commands.add_component(fruit, ProvidesSensing { amount: *n })
+                            }
                             "MagicMap" => commands.add_component(fruit, ProvidesDungeonMap {}),
                             _ => {
                                 println!("Warning: we don't know how to provide {}", provides);

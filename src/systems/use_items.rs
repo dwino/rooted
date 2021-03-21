@@ -3,14 +3,19 @@ use crate::prelude::*;
 #[system]
 #[read_component(ActivateItem)]
 #[read_component(ProvidesHealing)]
+#[read_component(ProvidesSensing)]
 #[write_component(Health)]
 #[read_component(ProvidesDungeonMap)]
 #[read_component(Equipment)]
 #[read_component(Equiped)]
 #[read_component(Weapon)]
 #[read_component(ProjectileStack)]
+#[read_component(Player)]
+#[write_component(FieldOfView)]
 pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] map: &mut Map) {
     let mut healing_to_apply = Vec::<(Entity, i32)>::new();
+    let mut fov = <&mut FieldOfView>::query().filter(component::<Player>());
+    let mut player_is_sensing = false;
     <(Entity, &ActivateItem)>::query()
         .iter(ecs)
         .for_each(|(entity, activate)| {
@@ -18,6 +23,11 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
             if let Ok(item) = item {
                 if let Ok(healing) = item.get_component::<ProvidesHealing>() {
                     healing_to_apply.push((activate.used_by, healing.amount));
+                }
+
+                if let Ok(sensing) = item.get_component::<ProvidesSensing>() {
+                    println!("usedsensing");
+                    player_is_sensing = true;
                 }
 
                 if let Ok(_mapper) = item.get_component::<ProvidesDungeonMap>() {
@@ -63,5 +73,10 @@ pub fn use_items(ecs: &mut SubWorld, commands: &mut CommandBuffer, #[resource] m
                 health.current = i32::min(health.max, health.current + heal.1);
             }
         }
+    }
+
+    if player_is_sensing {
+        fov.iter_mut(ecs).next().unwrap().sensing = true;
+        println!("SENSING");
     }
 }

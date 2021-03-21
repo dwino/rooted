@@ -24,7 +24,7 @@ pub enum AiType {
 pub enum FruitType {
     Healing,
     Knowing,
-    Smelling,
+    Sensing,
 }
 #[derive(Clone, Copy, Deserialize, Debug, PartialEq, Eq, Hash)]
 pub enum EquipmentType {
@@ -110,13 +110,11 @@ impl Templates {
             EntityType::Equipment => {
                 commands.add_component(entity, Item {});
                 commands.add_component(entity, Equipment {});
-                println!("added equipment");
             }
             EntityType::Fruit => commands.add_component(entity, Item {}),
             EntityType::Plant => {
                 commands.add_component(entity, Plant {});
                 if let Some(fruit_type) = template.fruit_type {
-                    println!("{:?}", fruit_type);
                     commands.add_component(
                         entity,
                         SpawningFruit {
@@ -125,7 +123,6 @@ impl Templates {
                     );
                 }
                 if let Some(equipment_type) = template.equipment_type {
-                    println!("{:?}", equipment_type);
                     commands.add_component(
                         entity,
                         SpawningEquipment {
@@ -173,7 +170,6 @@ impl Templates {
                         );
                     }
                     AiType::AntAi => {
-                        println!("added antai");
                         commands.add_component(entity, AntAi {});
                         commands.add_component(
                             entity,
@@ -198,6 +194,10 @@ impl Templates {
                 .iter()
                 .for_each(|(provides, n)| match provides.as_str() {
                     "Healing" => commands.add_component(entity, ProvidesHealing { amount: *n }),
+                    "Sensing" => {
+                        println!("providessensing");
+                        commands.add_component(entity, ProvidesSensing { amount: *n })
+                    }
                     "MagicMap" => commands.add_component(entity, ProvidesDungeonMap {}),
                     _ => {
                         println!("Warning: we don't know how to provide {}", provides);

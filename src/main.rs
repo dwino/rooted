@@ -206,7 +206,7 @@ impl State {
                 pos.y = map_builder.player_start.y;
             });
         if map_level == 2 {
-            spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
+            spawn_magic_droplet(&mut self.ecs, map_builder.amulet_start);
         } else {
             let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
             map_builder.map.tiles[exit_idx] = TileType::Exit;
@@ -230,19 +230,19 @@ impl State {
             4,
             WHITE,
             BLACK,
-            "Slain by a monster, your hero's journey has come to a premature end.",
+            "Slain by a monster, your root's journey has come to a premature end.",
         );
         ctx.print_color_centered(
             5,
             WHITE,
             BLACK,
-            "The Amulet of YALA remains unclaimed, and your home town is not saved.",
+            "The Magic Droplet remains unclaimed, and Home Tree is still dying.",
         );
         ctx.print_color_centered(
             8,
             YELLOW,
             BLACK,
-            "Don't worry, you can always try again with a new hero.",
+            "Don't worry, you can always try again with a new root.",
         );
         ctx.print_color_centered(9, GREEN, BLACK, "Press 1 to play again.");
 
@@ -258,13 +258,13 @@ impl State {
             4,
             WHITE,
             BLACK,
-            "You put on the Amulet of YALA and feel its power course through your veins.",
+            "You absord the Magic Droplet and feel its power course through your veins.",
         );
         ctx.print_color_centered(
             5,
             WHITE,
             BLACK,
-            "Your town is saved, and you can return to your normal life.",
+            "You return to Home Tree and rejoin it's rootsystem. It immediatly starts growing strong again!",
         );
         ctx.print_color_centered(7, GREEN, BLACK, "Press 1 to play again.");
         if let Some(VirtualKeyCode::Key1) = ctx.key {

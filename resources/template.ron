@@ -45,9 +45,9 @@ Templates(
         ),
         Template(
             entity_type: Plant,
-            fruit_type: Some(Smelling),
-            name : "Smelling Tree", glyph : '♠', color : "#71AA34", levels : [0, 1, 2 ],
-            frequency: 2,
+            fruit_type: Some(Sensing),
+            name : "Sensing Tree", glyph : '♠', color : "#71AA34", levels : [0, 1, 2 ],
+            frequency: 10,
         ),
         Template(
             entity_type: Plant,
@@ -110,10 +110,10 @@ Templates(
             provides: Some([ ("MagicMap", 0) ]),
             frequency: 10
         ),
-        Smelling: (
+        Sensing: (
             entity_type: Fruit,
-            name : "Smelly Fruit", glyph : '*', color : "#71AA34", levels : [],
-            provides: Some([ ("MagicMap", 0), ("Healing", 3) ]),
+            name : "Sensing Fruit", glyph : '*', color : "#71AA34", levels : [],
+            provides: Some([ ("Sensing", 20) ]),
             frequency: 10
         ), 
     },

@@ -21,6 +21,7 @@ pub struct Targetable;
 pub struct FieldOfView {
     pub visible_tiles: HashSet<Point>,
     pub radius: i32,
+    pub sensing: bool,
     pub is_dirty: bool,
 }
 
@@ -29,6 +30,7 @@ impl FieldOfView {
         Self {
             visible_tiles: HashSet::new(),
             radius,
+            sensing: false,
             is_dirty: true,
         }
     }
@@ -37,6 +39,7 @@ impl FieldOfView {
         Self {
             visible_tiles: HashSet::new(),
             radius: self.radius,
+            sensing: self.sensing,
             is_dirty: true,
         }
     }

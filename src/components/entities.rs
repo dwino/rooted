@@ -15,6 +15,6 @@ pub struct Fruit;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Item;
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct AmuletOfYala;
+pub struct MagicDroplet;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ForageSource;

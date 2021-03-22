@@ -26,4 +26,6 @@ pub struct WantsEndTargeting {}
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsEndInput(pub RlState);
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct WantsToPatrolRandomly {}
+pub struct WantsToPatrolRandomly {
+    pub patroller: Entity,
+}

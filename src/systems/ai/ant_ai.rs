@@ -12,7 +12,6 @@ use crate::prelude::*;
 #[read_component(Fruit)]
 #[read_component(Energy)]
 pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
-    let mut rng = RandomNumberGenerator::new();
     let mut movers = <(Entity, &Point, &AntAi, &FieldOfView, &Energy)>::query();
     let mut player = <(Entity, &Point, &Player)>::query();
     let player_entity = player.iter(ecs).next().unwrap().0;
@@ -105,7 +104,7 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         }
 
         if !acted {
-            commands.add_component(*entity, WantsToPatrolRandomly {})
+            commands.push(((), WantsToPatrolRandomly { patroller: *entity }));
         }
 
         commands.add_component(

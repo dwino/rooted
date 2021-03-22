@@ -10,7 +10,7 @@ pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &m
     let mut wants_to_patrol = <(Entity, &WantsToPatrolRandomly)>::query();
     let patrol_entities: Vec<Entity> = wants_to_patrol
         .iter(ecs)
-        .map(|(message_entity, _message_component)| *message_entity)
+        .map(|(_message_entity, message_component)| message_component.patroller)
         .collect();
     let mut movers = <(Entity, &Point, &mut PatrollingRandomly, &FieldOfView)>::query();
     let mut positions = <&Point>::query();

@@ -240,12 +240,7 @@ impl State {
     fn rl_victory(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(2);
         ctx.print_color_centered(2, GREEN, BLACK, "You have won!");
-        ctx.print_color_centered(
-            4,
-            WHITE,
-            BLACK,
-            "You absord the Magic Droplet and feel its power course through your veins.",
-        );
+        ctx.print_color_centered(4, WHITE, BLACK, "You absord the Magic Droplet.");
         ctx.print_color_centered(
             5,
             WHITE,

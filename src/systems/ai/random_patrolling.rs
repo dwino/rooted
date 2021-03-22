@@ -62,4 +62,9 @@ pub fn random_patrolling(#[resource] map: &Map, ecs: &mut SubWorld, commands: &m
                 },
             ));
         });
+    wants_to_patrol
+        .iter(ecs)
+        .for_each(|(message_entity, _message_component)| {
+            commands.remove(*message_entity);
+        })
 }

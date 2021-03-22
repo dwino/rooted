@@ -9,7 +9,7 @@ pub fn spawning_fruit(#[resource] map: &Map, ecs: &SubWorld, commands: &mut Comm
     let mut rng = RandomNumberGenerator::new();
     let mut fruits_positions = <&Point>::query().filter(component::<Fruit>());
     fruit_spawners.iter(ecs).for_each(|(pos, fruit_spawn)| {
-        if rng.range(0, 75) < 1 {
+        if rng.range(0, 50) < 1 {
             let color = RGB::from_hex(fruit_spawn.template.color.clone()).expect("Bad Hex");
             let delta = match rng.range(0, 4) {
                 0 => Point::new(-1, 0),

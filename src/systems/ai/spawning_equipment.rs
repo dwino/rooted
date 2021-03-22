@@ -11,7 +11,7 @@ pub fn spawning_equipment(#[resource] map: &Map, ecs: &SubWorld, commands: &mut 
     equipment_spawners
         .iter(ecs)
         .for_each(|(pos, equipment_spawn)| {
-            if rng.range(0, 75) < 1 {
+            if rng.range(0, 50) < 1 {
                 let color = RGB::from_hex(equipment_spawn.template.color.clone()).expect("Bad Hex");
                 let delta = match rng.range(0, 4) {
                     0 => Point::new(-1, 0),

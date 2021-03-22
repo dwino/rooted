@@ -15,7 +15,7 @@ pub fn spawn_level(
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     let mut commands = legion::systems::CommandBuffer::new(ecs);
 
-    ecs.push((
+    let player = ecs.push((
         Player { map_level: 0 },
         pos,
         Render {
@@ -26,8 +26,8 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             glyph: to_cp437('@'),
         },
         Health {
-            current: 45,
-            max: 45,
+            current: 60,
+            max: 60,
         },
         Targeting {
             targets: Vec::new(),
@@ -35,8 +35,16 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             index: usize::MAX,
         },
         FieldOfView::new(9),
-        TargetRange::new(5),
-        Damage(1),
+        TargetRange::new(7),
+        Damage(2),
+    ));
+    ecs.push((
+        Name("Thorn Dart|dam:1".to_string()),
+        Item {},
+        Equipment {},
+        Equiped(player),
+        RangedDamage(2),
+        ProjectileStack(12),
     ));
 }
 

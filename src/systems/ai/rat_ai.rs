@@ -19,7 +19,7 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
     let player_pos = player.iter(ecs).next().unwrap().1;
     let player_idx = map.point2d_to_index(*player_pos);
     let mut equipment = <(Entity, &Equipment, &Point)>::query();
-
+    let mut occupied_positions = Vec::new();
     movers.iter(ecs).for_each(|(entity, pos, _, fov, energy)| {
         let mut search_targets: Vec<(usize, f32)> = Vec::new();
 
@@ -40,7 +40,7 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
                     victim: *player_entity,
                 },
             ));
-
+            occupied_positions.push(*pos);
             acted = true;
         }
 
@@ -56,10 +56,11 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
                 commands.add_component(
                     *entity,
                     Energy {
-                        current: energy.current + rng.range(energy.max / 5, energy.max),
+                        current: energy.max,
                         max: energy.max,
                     },
                 );
+                occupied_positions.push(*pos);
                 acted = true;
             }
         }
@@ -73,16 +74,13 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
             if !search_targets.is_empty() {
                 search_targets = Vec::new();
             }
-            search_targets.push((player_idx, -10.0));
+            search_targets.push((player_idx, 0.0));
 
             use_dijkstra_nav = true;
-
-            let mut x = 0;
 
             equipment.iter(ecs).for_each(|(_entity, _equipment, pos)| {
                 let idx = map.point2d_to_index(*pos);
                 search_targets.push((idx, 0.0));
-                x += 1;
             });
         }
 
@@ -97,13 +95,16 @@ pub fn rat_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
             ) {
                 let destination = map.index_to_point2d(destination);
 
-                commands.push((
-                    (),
-                    WantsToMove {
-                        entity: *entity,
-                        destination,
-                    },
-                ));
+                if !occupied_positions.contains(&destination) {
+                    occupied_positions.push(destination);
+                    commands.push((
+                        (),
+                        WantsToMove {
+                            entity: *entity,
+                            destination,
+                        },
+                    ));
+                }
             }
             acted = true;
         }

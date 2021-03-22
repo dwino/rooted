@@ -19,7 +19,7 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
     let player_pos = player.iter(ecs).next().unwrap().1;
     let player_idx = map.point2d_to_index(*player_pos);
     let mut fruit = <(Entity, &Fruit, &Point)>::query();
-
+    let mut occupied_positions = Vec::new();
     movers.iter(ecs).for_each(|(entity, pos, _, fov, energy)| {
         let mut search_targets: Vec<(usize, f32)> = Vec::new();
 
@@ -28,7 +28,7 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
         let mut acted = false;
 
         let distance_to_player = DistanceAlg::Pythagoras.distance2d(*pos, *player_pos);
-        if distance_to_player < 3.9 {
+        if distance_to_player < 2.9 {
             attack_player = true;
         };
 
@@ -40,7 +40,7 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
                     victim: *player_entity,
                 },
             ));
-
+            occupied_positions.push(*pos);
             acted = true;
         }
 
@@ -56,28 +56,26 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
                 commands.add_component(
                     *entity,
                     Energy {
-                        current: energy.current + rng.range(energy.max / 5, energy.max),
+                        current: energy.max,
                         max: energy.max,
                     },
                 );
+                occupied_positions.push(*pos);
                 acted = true;
             }
         }
 
         if fov.visible_tiles.contains(&player_pos) {
-            search_targets.push((player_idx, -5.0));
+            search_targets.push((player_idx, -10.0));
             use_dijkstra_nav = true;
         }
 
         if energy.current < energy.max / 2 {
             use_dijkstra_nav = true;
 
-            let mut x = 0;
-
             fruit.iter(ecs).for_each(|(_entity, _fruit, pos)| {
                 let idx = map.point2d_to_index(*pos);
                 search_targets.push((idx, 0.0));
-                x += 1;
             });
         }
 
@@ -92,13 +90,16 @@ pub fn ant_ai(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffe
             ) {
                 let destination = map.index_to_point2d(destination);
 
-                commands.push((
-                    (),
-                    WantsToMove {
-                        entity: *entity,
-                        destination,
-                    },
-                ));
+                if !occupied_positions.contains(&destination) {
+                    occupied_positions.push(destination);
+                    commands.push((
+                        (),
+                        WantsToMove {
+                            entity: *entity,
+                            destination,
+                        },
+                    ));
+                }
             }
             acted = true;
         }

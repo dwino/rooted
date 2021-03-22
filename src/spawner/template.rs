@@ -159,7 +159,7 @@ impl Templates {
                         commands.add_component(
                             entity,
                             Energy {
-                                current: rng.range(15, 30),
+                                current: rng.range(25, 45),
                                 max: 50,
                             },
                         );
@@ -175,7 +175,7 @@ impl Templates {
                         commands.add_component(
                             entity,
                             Energy {
-                                current: rng.range(10, 25),
+                                current: rng.range(25, 45),
                                 max: 50,
                             },
                         );
